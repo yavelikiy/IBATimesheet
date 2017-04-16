@@ -90,7 +90,7 @@ public class WLResourceRequestRN extends ReactContextBaseJavaModule {
                     Log.d("Success", response.getResponseText());
                 }
                 public void onFailure(WLFailResponse response) {
-                    promise.reject(response.getErrorStatusCode(), response.getErrorMsg());
+                    promise.reject(response.getErrorCode().getDescription(), response.getErrorMsg());
                     Log.d("Failure", response.getErrorMsg());
                 }
             });

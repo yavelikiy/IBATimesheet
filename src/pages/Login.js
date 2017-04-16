@@ -31,7 +31,7 @@ export default class Login extends Component {
         this.setState({ isLoading: true, message: '' });
         try {
             var result
-            result = await WLResourceRequestRN.asyncRequestWithURL("/adapters/MFBlogAdapter/getFeed", WLResourceRequestRN.GET);
+            result = await WLResourceRequestRN.asyncRequestWithURL("/adapters/javaAdapter/resource/protected", WLResourceRequestRN.GET);
             this.handleResponse(JSON.parse(result))
         } catch (e) {
             error = e;
@@ -43,7 +43,7 @@ export default class Login extends Component {
         //SecurityCheckChallengeHandlerRN.cancel("UserLogin");
         var that = this;
         this.setState({ isLoading: true, message: '' });
-        WLResourceRequestRN.requestWithURL("/adapters/MFBlogAdapter/getFeed", WLResourceRequestRN.GET,
+        WLResourceRequestRN.requestWithURL("/adapters/javaAdapter/resource/protected", WLResourceRequestRN.GET,
             (error) => {
                 //that.props.navigator.popToTop();
                 that.setState({ isLoading: false, message: error.message });
@@ -55,18 +55,18 @@ export default class Login extends Component {
     }	
 
     handleResponse(response) {
-        /*this.setState({ isLoading: false, message: '' });
-        var beComponent = {
-            title: 'MF And ReactNative Demo',
-            component: BlogEntries,
-            passProps: { entries: response.feed.entry }
-        };
+        // this.setState({ isLoading: false, message: '' });
+        // var beComponent = {
+        //     title: 'MF And ReactNative Demo',
+        //     component: BlogEntries,
+        //     passProps: { entries: response.feed.entry }
+        // };
 
-        if (this.isLoginOnTop()) {
-            this.props.navigator.replace(beComponent);
-        } else {
-            this.props.navigator.push(beComponent);
-        }*/
+        // if (this.isLoginOnTop()) {
+        //     this.props.navigator.replace(beComponent);
+        // } else {
+        //     this.props.navigator.push(beComponent);
+        // }
         
     }
 
@@ -76,7 +76,17 @@ export default class Login extends Component {
 
   pressSignIn() {
   	Alert.alert('Navigate to sign in form..');
-  	getMFBlogEnriesAsCallback();
+  	var that = this;
+    this.setState({ isLoading: true, message: '' });
+    WLResourceRequestRN.requestWithURL("/adapters/javaAdapter/resource/protected", WLResourceRequestRN.GET,
+        (error) => {
+            //that.props.navigator.popToTop();
+            that.setState({ isLoading: false, message: error.message });
+        },
+        (result) => {
+            that.handleResponse(JSON.parse(result))
+            that.setState({ isLoading: false, message: "" });
+        });
   }
 
   render() {
@@ -105,7 +115,7 @@ export default class Login extends Component {
 		        <Button 
 		            label="Sign Up"
 		            styles={{button: styles.primaryButton, label: styles.buttonWhiteText}} 
-		            onPress={this.press.bind(this)} />
+		            onPress={this.pressSignIn.bind(this)} />
 		    </Container>
         </ScrollView>
     );

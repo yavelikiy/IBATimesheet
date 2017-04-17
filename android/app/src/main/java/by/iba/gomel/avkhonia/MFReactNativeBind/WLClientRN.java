@@ -19,13 +19,21 @@ package by.iba.gomel.avkhonia.MFReactNativeBind;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
 import com.worklight.wlclient.api.WLClient;
-import com.worklight.wlclient.api.challengehandler.SecurityCheckChallengeHandler;
+import com.ibatimesheet.RNJSONUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
+// MF 8.0
+//import com.worklight.wlclient.api.challengehandler.SecurityCheckChallengeHandler;
+// MF 7.1
+import com.worklight.wlclient.api.challengehandler.WLChallengeHandler;
 
 /**
  * Created by ishaib on 15/09/16.
  */
 public class WLClientRN extends ReactContextBaseJavaModule {
+    WLChallengeHandler challengeHandler;
     public WLClientRN(ReactApplicationContext reactContext) {
         super(reactContext);
     }
@@ -35,11 +43,37 @@ public class WLClientRN extends ReactContextBaseJavaModule {
         return "WLClientRN";
     }
 
+
     @ReactMethod
-    public void registerChallengeHandler(String securityCheck) {
-        SecurityCheckChallengeHandler securityCheckChallengeHandler = WLClient.getInstance().getSecurityCheckChallengeHandler(securityCheck);
-        if (securityCheckChallengeHandler == null) {
-            WLClient.getInstance().registerChallengeHandler(new GenericSecurityCheckChallengeHandler(securityCheck , this.getReactApplicationContext()));
+    public WLChallengeHandler getChallengeHandler() {
+        return challengeHandler;
+    }
+
+    @ReactMethod
+    public void registerChallengeHandler(String securityCheck, ReactApplicationContext reactContext) {
+        if(this.challengeHandler !=null)
+            return;
+        this.challengeHandler = new GenericSecurityCheckChallengeHandler(securityCheck , reactContext);
+        WLClient.getInstance().registerChallengeHandler(this.challengeHandler);
+    }
+
+    @ReactMethod
+    public void cancel(String securityCheck) {
+        //if (challengeHandler != null)
+        //    challengeHandler.cancel();
+    }
+
+    @ReactMethod
+    public void submitChallengeAnswer(ReadableMap challengeAnswer) {
+
+        JSONObject answer;
+        try {
+            if (challengeHandler != null) {
+                answer = RNJSONUtils.convertMapToJson(challengeAnswer);
+                challengeHandler.submitChallengeAnswer(answer);
+            }
+        } catch (JSONException e) {
+            //Log.e(this.getClass().getCanonicalName(), e.getMessage(), e);
         }
     }
 }

@@ -23,8 +23,8 @@ public class MainActivity extends ReactActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        WLClient.createInstance(this);
         super.onCreate(savedInstanceState);
+        WLClient client = WLClient.createInstance(this);
     }
 
     @Override

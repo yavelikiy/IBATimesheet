@@ -50,7 +50,6 @@ public class WLNativePackage implements ReactPackage {
 
         modules.add(new WLClientRN(reactContext));
         modules.add(new WLResourceRequestRN(reactContext));
-        //modules.add(new SecurityCheckChallengeHandlerRN(reactContext));
         return modules;
     }
 }

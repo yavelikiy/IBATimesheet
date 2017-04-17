@@ -6,7 +6,12 @@ import {
   View,
   TextInput,
   ScrollView,
-  Alert
+  Alert,
+  ActivityIndicator,
+  Image,
+  Platform,
+  NativeEventEmitter,
+  NativeModules
 } from 'react-native';
 
 import Container from '../components/Container';
@@ -14,6 +19,7 @@ import Button from '../components/Button';
 import Label from '../components/Label';
 
 var WLResourceRequestRN = require('NativeModules').WLResourceRequestRN;
+//var WLClientRN = require('NativeModules').WLClientRN;
 
 export default class Login extends Component {
 	constructor(props) {
@@ -22,11 +28,35 @@ export default class Login extends Component {
 	            isLoading: false,
 	            message: ''
 	        };   
-	        //this.registerChallengeHandler();
+	       // WLClientRN.registerChallengeHandler("UserLogin");
 	    }
 
+	isLoginOnTop() {
+        return this.props.navigator.navigationContext.currentRoute.component.name === "LoginScreen";
+    }
+
+
+	// const challengeEventModule = new NativeEventEmitter(NativeModules.SecurityCheckChallengeHandlerEventEmitter);
+    
+ //    addChallengeListener() {
+ //        var that = this;       
+ //        const challengeEventModuleSubscription  = challengeEventModule.addListener(
+ //            'handleChallenge', function (challenge) {
+ //                if (challenge.securityCheck === "UserLogin" && !that.isLoginOnTop()) {
+ //                    var a = that.props.navigator.push({
+ //                        title: 'Login',
+ //                        component: LoginScreen,
+ //                        passProps: {}
+ //                    });
+ //                } else if (that.isLoginOnTop()){
+ //                    alert("Wrong Credentials");
+ //                }
+ //            }
+ //        );
+    
+
     async getMFBlogEnriesAsPromise() {
-        //SecurityCheckChallengeHandlerRN.cancel("UserLogin");
+        //WLClientRN.cancel("UserLogin");
         var error = "";
         this.setState({ isLoading: true, message: '' });
         try {
@@ -40,7 +70,7 @@ export default class Login extends Component {
     }
 
     getMFBlogEnriesAsCallback() {
-        //SecurityCheckChallengeHandlerRN.cancel("UserLogin");
+        //WLClientRN.cancel("UserLogin");
         var that = this;
         this.setState({ isLoading: true, message: '' });
         WLResourceRequestRN.requestWithURL("/adapters/javaAdapter/resource/protected", WLResourceRequestRN.GET,
@@ -55,12 +85,12 @@ export default class Login extends Component {
     }	
 
     handleResponse(response) {
-        // this.setState({ isLoading: false, message: '' });
-        // var beComponent = {
-        //     title: 'MF And ReactNative Demo',
-        //     component: BlogEntries,
-        //     passProps: { entries: response.feed.entry }
-        // };
+        this.setState({ isLoading: false, message: '' });
+        var beComponent = {
+            title: 'MF And ReactNative Demo',
+            component: BlogEntries,
+            passProps: { entries: response.feed.entry }
+        };
 
         // if (this.isLoginOnTop()) {
         //     this.props.navigator.replace(beComponent);

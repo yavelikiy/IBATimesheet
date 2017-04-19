@@ -6,14 +6,16 @@ import {
   View,
   TextInput,
   ScrollView,
-  Alert
+  Alert,
+  NativeModules
 } from 'react-native';
 
 import Container from '../components/Container';
 import Button from '../components/Button';
 import Label from '../components/Label';
 
-var WLResourceRequestRN = require('NativeModules').WLResourceRequestRN;
+import WLResourceRequestRN from '../wrappers/WLResourceRequestRN'
+//var WLResourceRequestRN = require('NativeModules').WLResourceRequestRN;
 
 export default class Login extends Component {
 	constructor(props) {
@@ -55,14 +57,14 @@ export default class Login extends Component {
     }	
 
     handleResponse(response) {
-        /*this.setState({ isLoading: false, message: '' });
+        this.setState({ isLoading: false, message: '' });
         var beComponent = {
             title: 'MF And ReactNative Demo',
-            component: BlogEntries,
+            component: null,
             passProps: { entries: response.feed.entry }
         };
 
-        if (this.isLoginOnTop()) {
+        /*if (this.isLoginOnTop()) {
             this.props.navigator.replace(beComponent);
         } else {
             this.props.navigator.push(beComponent);
@@ -76,7 +78,7 @@ export default class Login extends Component {
 
   pressSignIn() {
   	Alert.alert('Navigate to sign in form..');
-  	getMFBlogEnriesAsCallback();
+  	this.getMFBlogEnriesAsCallback();
   }
 
   render() {
@@ -103,9 +105,9 @@ export default class Login extends Component {
 			</Container>
 			<Container>
 		        <Button 
-		            label="Sign Up"
+		            label="Sign In"
 		            styles={{button: styles.primaryButton, label: styles.buttonWhiteText}} 
-		            onPress={this.press.bind(this)} />
+		            onPress={this.pressSignIn.bind(this)} />
 		    </Container>
         </ScrollView>
     );

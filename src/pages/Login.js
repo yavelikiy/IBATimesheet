@@ -15,6 +15,7 @@ import Button from '../components/Button';
 import Label from '../components/Label';
 
 import WLResourceRequestRN from '../wrappers/WLResourceRequestRN'
+import WLClientRN from '../wrappers/WLResourceRequestRN'
 //var WLResourceRequestRN = require('NativeModules').WLResourceRequestRN;
 
 export default class Login extends Component {
@@ -22,7 +23,7 @@ export default class Login extends Component {
 	        super(props);
 	        this.state = {
 	            isLoading: false,
-	            message: ''
+	            message: '123'
 	        };   
 	        //this.registerChallengeHandler();
 	    }
@@ -33,7 +34,7 @@ export default class Login extends Component {
         this.setState({ isLoading: true, message: '' });
         try {
             var result
-            result = await WLResourceRequestRN.asyncRequestWithURL("/adapters/MFBlogAdapter/getFeed", WLResourceRequestRN.GET);
+            result = await WLResourceRequestRN.asyncRequestWithURL("/adapters/timesheetAdapter/statuses", WLResourceRequestRN.GET);
             this.handleResponse(JSON.parse(result))
         } catch (e) {
             error = e;
@@ -45,7 +46,7 @@ export default class Login extends Component {
         //SecurityCheckChallengeHandlerRN.cancel("UserLogin");
         var that = this;
         this.setState({ isLoading: true, message: '' });
-        WLResourceRequestRN.requestWithURL("/adapters/MFBlogAdapter/getFeed", WLResourceRequestRN.GET,
+        WLResourceRequestRN.requestWithURL("/adapters/timesheetAdapter/statuses", WLResourceRequestRN.GET,
             (error) => {
                 //that.props.navigator.popToTop();
                 that.setState({ isLoading: false, message: error.message });
@@ -57,13 +58,16 @@ export default class Login extends Component {
     }	
 
     handleResponse(response) {
+  		Alert.alert('Navigate to sign in form..'+response[0]);
         this.setState({ isLoading: false, message: '' });
-        var beComponent = {
-            title: 'MF And ReactNative Demo',
-            component: null,
-            passProps: { entries: response.feed.entry }
-        };
+        // var beComponent = {
+        //     title: 'MF And ReactNative Demo',
+        //     component: null,
+        //     passProps: { entries: response.feed.entry }
+        // };
 
+    	const { navigate } = this.props.navigation;
+    	navigate('Timesheets');
         /*if (this.isLoginOnTop()) {
             this.props.navigator.replace(beComponent);
         } else {
@@ -77,8 +81,7 @@ export default class Login extends Component {
   }
 
   pressSignIn() {
-  	Alert.alert('Navigate to sign in form..');
-  	this.getMFBlogEnriesAsCallback();
+  	this.getMFBlogEnriesAsPromise();
   }
 
   render() {
@@ -108,6 +111,9 @@ export default class Login extends Component {
 		            label="Sign In"
 		            styles={{button: styles.primaryButton, label: styles.buttonWhiteText}} 
 		            onPress={this.pressSignIn.bind(this)} />
+		    </Container>
+			<Container>
+			    <Label text={this.state.message}  style={styles.label}/>
 		    </Container>
         </ScrollView>
     );

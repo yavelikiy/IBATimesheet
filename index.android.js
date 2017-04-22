@@ -136,17 +136,11 @@ const styles = StyleSheet.create({
   },
 });*/
 
-export default class IBATimesheet extends Component {
-   constructor(props) {
-    super(props);
-    this.state = { text: 'Useless Placeholder' };
-  }
+const IBATimeshee = StackNavigator({
+  Login: { screen: Login },
+  Timesheets: { screen: Timesheets },
+  Timesheet: { screen: Timesheet },
+});
 
-  render() {
-    return (
-      <Login/>
-    );
-  }
-}
 
 AppRegistry.registerComponent('IBATimesheet', () => IBATimesheet);

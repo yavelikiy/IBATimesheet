@@ -40,7 +40,8 @@ import java.util.Map;
 public class WLResourceRequestRN extends ReactContextBaseJavaModule {
     public WLResourceRequestRN(ReactApplicationContext reactContext) {
         super(reactContext);
-        WLClient client = WLClient.createInstance(reactContext);
+        // use different module for this
+        //WLClient client = WLClient.createInstance(reactContext);
     }
 
     @Override

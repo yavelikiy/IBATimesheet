@@ -1,4 +1,4 @@
-﻿package com.ibatimesheet;
+package com.ibatimesheet;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.JavaScriptModule;

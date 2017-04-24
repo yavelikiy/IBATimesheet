@@ -19,14 +19,14 @@ import WLClientRN from '../wrappers/WLResourceRequestRN'
 //var WLResourceRequestRN = require('NativeModules').WLResourceRequestRN;
 
 export default class Login extends Component {
-	constructor(props) {
-	        super(props);
-	        this.state = {
-	            isLoading: false,
-	            message: '123'
-	        };   
-	        //this.registerChallengeHandler();
-	    }
+  constructor(props) {
+          super(props);
+          this.state = {
+              isLoading: false,
+              message: 'Message'
+          };   
+          //this.registerChallengeHandler();
+      }
 
     async getMFBlogEnriesAsPromise() {
         //SecurityCheckChallengeHandlerRN.cancel("UserLogin");
@@ -39,7 +39,7 @@ export default class Login extends Component {
         } catch (e) {
             error = e;
         }
-        this.setState({ isLoading: false, message: error ? "Failed to retrieve blog entries - " + error.message : ""});
+        this.setState({ isLoading: false, message: error ? "Failed to retrieve entry - " + error.message : ""});
     }
 
     getMFBlogEnriesAsCallback() {
@@ -53,9 +53,13 @@ export default class Login extends Component {
             },
             (result) => {
                 that.handleResponse(JSON.parse(result))
-                that.setState({ isLoading: false, message: "" });
+                //that.setState({ isLoading: false, message: "" });
             });
-    }	
+    } 
+
+    navTimesheets(){
+		this.props.navigation.navigate('Timesheets');
+	}
 
     handleResponse(response) {
   		Alert.alert('Navigate to sign in form..'+response[0]);
@@ -65,9 +69,7 @@ export default class Login extends Component {
         //     component: null,
         //     passProps: { entries: response.feed.entry }
         // };
-
-    	const { navigate } = this.props.navigation;
-    	navigate('Timesheets');
+        this.navTimesheets();
         /*if (this.isLoginOnTop()) {
             this.props.navigator.replace(beComponent);
         } else {
@@ -77,75 +79,78 @@ export default class Login extends Component {
     }
 
   pressForget() {
-  	Alert.alert('Go to admins, please :)');
+    Alert.alert('Go to admins, please :)');
   }
 
   pressSignIn() {
-  	this.getMFBlogEnriesAsPromise();
+  	//remove on MF test
+  	//this.getMFBlogEnriesAsPromise();
+    this.navTimesheets();
+  	
   }
 
   render() {
     return (
         <ScrollView style={styles.scroll}>
-        	<Container>
-			    <Button 
-			        label="Forgot Login/Pass"
-			        styles={{button: styles.alignRight, label: styles.label}} 
-			        onPress={this.pressForget.bind(this)} />
-			</Container>
-			<Container>
-			    <Label text="Username or Email" />
-			    <TextInput
-			        style={styles.textInput}
-			    />
-			</Container>
-			<Container>
-			    <Label text="Password" />
-			    <TextInput
-			        secureTextEntry={true}
-			        style={styles.textInput}
-			    />
-			</Container>
-			<Container>
-		        <Button 
-		            label="Sign In"
-		            styles={{button: styles.primaryButton, label: styles.buttonWhiteText}} 
-		            onPress={this.pressSignIn.bind(this)} />
-		    </Container>
-			<Container>
-			    <Label text={this.state.message}  style={styles.label}/>
-		    </Container>
-        </ScrollView>
+          <Container>
+          <Button 
+              label="Forgot Login/Pass"
+              styles={{button: styles.alignRight, label: styles.label}} 
+              onPress={this.pressForget.bind(this)} />
+      </Container>
+      <Container>
+          <Label text="Username or Email" />
+          <TextInput
+              style={styles.textInput}
+          />
+      </Container>
+      <Container>
+          <Label text="Password" />
+          <TextInput
+              secureTextEntry={true}
+              style={styles.textInput}
+          />
+      </Container>
+      <Container>
+            <Button 
+                label="Sign In"
+                styles={{button: styles.primaryButton, label: styles.buttonWhiteText}} 
+                onPress={this.pressSignIn.bind(this)} />
+        </Container>
+        <Container>
+          <Label text={this.state.message} />
+          </Container>
+      </ScrollView>
     );
   }
 }
 
 const styles = StyleSheet.create({
-	 scroll: {
-	    backgroundColor: '#E1D7D8',
-	    padding: 30,
-	    flexDirection: 'column'
-	},
-	label: {
-	    color: '#0d8898',
-	    fontSize: 20
-	},
-	alignRight: {
-	    alignSelf: 'flex-end'
-	},
-	textInput: {
-	    height: 80,
-	    fontSize: 30,
-	    backgroundColor: '#FFF'
-	},
-	buttonWhiteText: {
-	    fontSize: 20,
-	    color: '#FFF',
-	},
-	primaryButton: {
-	    backgroundColor: '#3B5699'
-	},
-	footer: {
-	   marginTop: 100
-	}
+   scroll: {
+      backgroundColor: '#E1D7D8',
+      padding: 30,
+      flexDirection: 'column'
+  },
+  label: {
+      color: '#0d8898',
+      fontSize: 20
+  },
+  alignRight: {
+      alignSelf: 'flex-end'
+  },
+  textInput: {
+      height: 80,
+      fontSize: 30,
+      backgroundColor: '#FFF'
+  },
+  buttonWhiteText: {
+      fontSize: 20,
+      color: '#FFF',
+  },
+  primaryButton: {
+      backgroundColor: '#3B5699'
+  },
+  footer: {
+     marginTop: 100
+  }
 });

@@ -21,39 +21,37 @@ var TIMESHEETS_PER_ROW = 2;
 class TimesheetsGridItem extends Component{
 	render(){
 		return(
-			<Container>
+			<View styles={styles.timesheet}>
 			    <Button 
 			        label={this.props.timesheet.title}
-			        styles={{button: styles.alignRight, label: styles.label}} 
-			        onPress={() => navigate('Timesheet', { timesheetTitle: {this.props.timesheet.title} })} />
-			</Container>
+			        styles={{button: styles.timesheetButton, label: styles.label}} 
+			         />
+			</View>
 		);
 	}
 }
+// cannot get navigate function. need to bind appropriately
+//	onPress={() => navigate({timesheetTitle : this.props.timesheet.title})}
 
 export default class Timesheets extends Component {
-	static navigationOptions = {
-		title: 'My Timesheets',
-	};
-
 	constructor(props) {
 	        super(props);
 		    this.state = {
 		      dataSource: null,
-		      loaded: false,
+	          loaded: false,
 		    }
 	    }
 
     
 	  render() {
 	  	if (!this.state.loaded) {
-	      return this.renderLoadingView();
+	     return this.renderLoadingView();
 	    }
 	    return (
 	        	<GridView
 			        items={this.state.dataSource}
 			        itemsPerRow={TIMESHEETS_PER_ROW}
-			        renderItem={this.renderItem}
+			        renderItem={this.renderItem.bind(this)}
 			        style={styles.listView}
 			      />
 	    );
@@ -82,9 +80,10 @@ export default class Timesheets extends Component {
 	  renderLoadingView() {
 	    return (
 	      <View>
-	        <Text>
-	          Loading movies...
-	        </Text>
+	         <Button 
+			        label='IS'
+			        styles={{button: styles.timesheetButton, label: styles.label}} 
+			        onPress={() => this.navTimesheet.bind(this)} />
 	      </View>
 	    );
 	  }
@@ -92,35 +91,24 @@ export default class Timesheets extends Component {
 	renderItem(item) {
     	return <TimesheetsGridItem timesheet={item} />
   	}
+
+  	
+    navTimesheet(){
+		this.props.navigator.push({
+			id: 'timesheet'
+		});
+	}
 }
 
 const styles = StyleSheet.create({
-	 scroll: {
-	    backgroundColor: '#E1D7D8',
-	    padding: 30,
-	    flexDirection: 'column'
+	timesheet: {
+		height: 60,
+		flex: 1,
+		alignItems: 'center',
+		flexDirection: 'column',
 	},
-	label: {
-	    color: '#0d8898',
-	    fontSize: 20
-	},
-	alignRight: {
-	    alignSelf: 'flex-end'
-	},
-	textInput: {
-	    height: 80,
-	    fontSize: 30,
-	    backgroundColor: '#FFF'
-	},
-	buttonWhiteText: {
-	    fontSize: 20,
-	    color: '#FFF',
-	},
-	primaryButton: {
+	timesheetButton: {
 	    backgroundColor: '#3B5699'
-	},
-	footer: {
-	   marginTop: 100
 	},
 	listView: {
 	  paddingTop: 20,

@@ -13,10 +13,14 @@ import {
   Button,
   TextInput,
   Alert,
-  View
+  View,
 } from 'react-native';
 
+import { StackNavigator } from 'react-navigation';
+
 import Login from './src/pages/Login';
+import Timesheets from './src/pages/Timesheets';
+import Timesheet from './src/pages/Timesheet';
 /*export default class IBATimesheet extends Component {
   render() {
     return (
@@ -136,11 +140,44 @@ const styles = StyleSheet.create({
   },
 });*/
 
-const IBATimeshee = StackNavigator({
-  Login: { screen: Login },
-  Timesheets: { screen: Timesheets },
-  Timesheet: { screen: Timesheet },
+const IBATimesheet = StackNavigator({
+  Login: { 
+    screen: Login, 
+    headerMode : 'screen',
+    navigationOptions : { headerVisible: false }
+  },
+  Timesheets: { 
+    screen: Timesheets,
+    navigationOptions : { title: 'My Timesheets' }
+  },
+  Timesheet: { screen: Timesheet, 
+    navigationOptions : ({ navigation }) => ({ title: "${navigation.state.params.timesheetTitle"})
+  },
 });
+
+// class IBATimesheet extends React.Component{
+//   var _navigator;
+
+//   render() {
+//     return (
+//       <Navigator
+//         initialRoute={{id: 'first'}}
+//         renderScene={this.navigatorRenderScene}/>
+//     );
+//   }
+
+//   navigatorRenderScene(route, navigator) {
+//     _navigator = navigator;
+//     switch (route.id) {
+//       case 'login':
+//         return (<Login navigator={navigator} title="Login"/>);
+//       case 'timesheets':
+//         return (<Second navigator={navigator} title="Timesheets" />);
+//       case 'timesheet':
+//         return (<Second navigator={navigator} title="Timesheet" />);
+//     }
+//   }
+// }
 
 
 AppRegistry.registerComponent('IBATimesheet', () => IBATimesheet);

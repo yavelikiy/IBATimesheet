@@ -97,28 +97,9 @@ export default class Login extends Component {
 		//remove on MF test
 		//this.getMFBlogEnriesAsPromise();
 		//this.navTimesheets();onSubmitPressed() {
-		SecurityCheckChallengeHandlerRN.submitChallengeAnswer({ 'username': this.state.username.trim(), 'password': this.state.password.trim() });
+		Alert.alert('Try to login');
+		SecurityCheckChallengeHandlerRN.login({ 'username': this.state.username.trim(), 'password': this.state.password.trim() });
 	}
-
-	addListeners() {
-        var that = this;       
-        const challengeEventModuleSubscription  = challengeEventModule.addListener(
-            'handleChallenge', function (challenge) {
-                    alert("Wrong Credentials");
-            }
-        );
-        const failureEventModuleSubscription  = challengeEventModule.addListener(
-            'failureChallenge', function (challenge) {
-                    alert("Failed");
-            }
-        );
-        const successEventModuleSubscription  = challengeEventModule.addListener(
-            'successChallenge', function (challenge) {
-                    alert("Success");
-         			that.navTimesheets();
-            }
-        );
-    }    
 
   render() {
     return (
@@ -162,6 +143,28 @@ export default class Login extends Component {
       </ScrollView>
     );
   }
+
+  addListeners() {
+        var that = this;       
+        const challengeEventModuleSubscription  = challengeEventModule.addListener(
+            'LOGIN_REQURIED', function (challenge) {
+                    alert("Login REQURIED");
+                    // set up message view
+            }
+        );
+        const failureEventModuleSubscription  = challengeEventModule.addListener(
+            'LOGIN_FAILED', function (challenge) {
+                    alert("Login Failed");
+                    // set up message view
+            }
+        );
+        const successEventModuleSubscription  = challengeEventModule.addListener(
+            'LOGIN_SUCCESS', function (challenge) {
+                    alert("Login Success");
+		this.props.navigation.back();
+            }
+        );
+    }    
 }
 const challengeEventModule = new NativeEventEmitter(NativeModules.SecurityCheckChallengeHandlerEventEmitter);
 

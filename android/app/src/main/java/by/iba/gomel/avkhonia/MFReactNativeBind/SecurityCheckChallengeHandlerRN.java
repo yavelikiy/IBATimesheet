@@ -57,7 +57,7 @@ public class SecurityCheckChallengeHandlerRN extends ReactContextBaseJavaModule 
                 ((GenericSecurityCheckChallengeHandler)securityCheckChallengeHandler).login(credentialsJson);
             }
         } catch (Exception e) {
-            Log.e(this.getClass().getCanonicalName(), e.getMessage(), e);
+            Log.e("IBATimesheet", e.getMessage(), e);
         }
     }
 
@@ -76,15 +76,16 @@ public class SecurityCheckChallengeHandlerRN extends ReactContextBaseJavaModule 
     @ReactMethod
     public void obtainAccessToken(){
         // Obtain Access Token
-        WLAuthorizationManager.getInstance().obtainAccessToken(Constants.SECURITY_CHECK, new WLAccessTokenListener() {
+        WLAuthorizationManager.getInstance().obtainAccessToken(null, new WLAccessTokenListener() {
             @Override
             public void onSuccess(AccessToken accessToken) {
-                Log.d("UserLogin", "auto login success");
+                Log.d(Constants.SECURITY_CHECK, "auto login success");
             }
 
             @Override
             public void onFailure(WLFailResponse wlFailResponse) {
-                Log.d("UserLogin", "auto login failure");
+                String server =  WLClient.getInstance().getServerUrl().toString(); 
+                    Log.d("IBATimesheet", "Auto Login failure at server:"+server+" - "+wlFailResponse.getErrorCode().getDescription()+": "+wlFailResponse.getErrorMsg());
             }
         });
     }

@@ -55,13 +55,14 @@ public class GenericSecurityCheckChallengeHandler extends SecurityCheckChallenge
 
     @Override
     public void handleChallenge(JSONObject jsonObject) {
+        Log.d("IBATimesheet", "Handle challenge");
         isChallenged = true;
         WritableMap params = null;
         try {
             params = RNJSONUtils.convertJsonToMap(jsonObject);
             params.putString("securityCheck", Constants.SECURITY_CHECK);
             reactApplicationContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
-            sendEvent(reactApplicationContext, "handleChallenge", params);
+            sendEvent(reactApplicationContext, "LOGIN_REQUIRED", params);
         } catch (JSONException e) {
             Log.e(this.getClass().getCanonicalName(), e.getMessage(), e);
         }
@@ -86,6 +87,8 @@ public class GenericSecurityCheckChallengeHandler extends SecurityCheckChallenge
 
     @Override
     public void handleFailure(JSONObject jsonObject) {
+        Log.d("IBATimesheet", "Handle failure");
+        isChallenged = false;
         WritableMap params = null;
         try {
             params = RNJSONUtils.convertJsonToMap(jsonObject);
@@ -96,7 +99,7 @@ public class GenericSecurityCheckChallengeHandler extends SecurityCheckChallenge
                 params.putString("errorMsg", "Unknown error");
             }
             reactApplicationContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
-            sendEvent(reactApplicationContext, "handleFailure", params);
+            sendEvent(reactApplicationContext, "LOGIN_FAILED", params);
         } catch (JSONException e) {
             Log.e(this.getClass().getCanonicalName(), e.getMessage(), e);
         }
@@ -105,12 +108,14 @@ public class GenericSecurityCheckChallengeHandler extends SecurityCheckChallenge
 
     @Override
     public void handleSuccess(JSONObject identity) {
+        isChallenged = false;
         reactApplicationContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
-        sendEvent(reactApplicationContext, "handleSuccess", null);
+        sendEvent(reactApplicationContext, "LOGIN_SUCCESS", null);
     }
 
 
     public void login(JSONObject credentials){
+        Log.d("IBATimesheet", "Try to login");
         if(isChallenged){
             submitChallengeAnswer(credentials);
         }
@@ -119,26 +124,31 @@ public class GenericSecurityCheckChallengeHandler extends SecurityCheckChallenge
             login(Constants.SECURITY_CHECK, credentials, new WLLoginResponseListener() {
                 @Override
                 public void onSuccess() {
-                    reactApplicationContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
-                    sendEvent(reactApplicationContext, "handleSuccess", null);
+                    //reactApplicationContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
+                    //sendEvent(reactApplicationContext, "handleSuccess", null);
                 }
 
                 @Override
                 public void onFailure(WLFailResponse wlFailResponse) {
+                    Log.d("IBATimesheet", "Login failure "+wlFailResponse.getErrorCode().getDescription()+": "+wlFailResponse.getErrorMsg());
                 }
             });
         }
     }
 
     public void logout(){
+        Log.d("IBATimesheet", "Try to logout");
         WLAuthorizationManager.getInstance().logout(Constants.SECURITY_CHECK, new WLLogoutResponseListener() {
             @Override
             public void onSuccess() {
+                reactApplicationContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
+                sendEvent(reactApplicationContext, "LOGOUT_SUCCESS", null);
             }
 
             @Override
             public void onFailure(WLFailResponse wlFailResponse) {
-
+                reactApplicationContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
+                sendEvent(reactApplicationContext, "LOGOUT_FAILURE", null);
             }
         });
     }

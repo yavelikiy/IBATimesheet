@@ -133,7 +133,7 @@ dependencies {
     }
 
     // From node_modules
-    compile('com.ibm.mobile.foundation:ibmmobilefirstplatformfoundation:8.0.+') {
+    compile('com.ibm.mobile.foundation:ibmmobilefirstplatformfoundation:8.0.2017012509') {
         exclude group: 'com.squareup.okio'
     }
 }

@@ -7,7 +7,8 @@ import {
   TextInput,
   ScrollView,
   Alert,
-  NativeModules
+  NativeModules,
+  NativeEventEmitter
 } from 'react-native';
 
 import Container from '../components/Container';
@@ -43,16 +44,19 @@ export default class Timesheets extends Component {
 		    this.state = {
 		      dataSource: null,
 	          loaded: false,
-	          message: '',
-	          loggedIn : false
+	          message: ''
 		    }
         	this.registerChallengeHandler();
-        	this.props.navigation.navigate("Login");
+        	this.obtainAccessToken();
     }
 
 
     registerChallengeHandler() {
         WLClientRN.registerChallengeHandler();
+    }
+
+    obtainAccessToken() {
+    	SecurityCheckChallengeHandlerRN.obtainAccessToken();
     } 
 
     
@@ -77,10 +81,6 @@ export default class Timesheets extends Component {
         	this.props.navigation.navigate("Login");
 		}
 	}
-
-	loggedIn() {
-       return this.props.state.loggedIn;
-    }
     
     
 	fetchData() {
@@ -93,7 +93,7 @@ export default class Timesheets extends Component {
  	 }
 
  	async getMFBlogEnriesAsPromise() {
-        SecurityCheckChallengeHandlerRN.cancel();
+        //SecurityCheckChallengeHandlerRN.cancel();
         var error = "";
         //this.setState({ loaded: true, message: '' });
         try {
@@ -130,14 +130,48 @@ export default class Timesheets extends Component {
     navTimesheet(title){
 		this.props.navigation.navigate('Timesheet', {timesheetTitle : "title"});
 	}
+
+    navigateToLogin(){
+		this.props.navigation.navigate('Login');
+	}
+
+
+
+	addListeners() {
+        var that = this;       
+        const challengeEventModuleSubscription  = challengeEventModule.addListener(
+            'LOGIN_REQURIED', function (challenge) {
+                    alert("Login REQURIED");
+                    that.navigateToLogin();
+            }
+        );
+        const failureEventModuleSubscription  = challengeEventModule.addListener(
+            'LOGIN_FAILED', function (challenge) {
+                    alert("Login Failed");
+                    that.navigateToLogin();
+            }
+        );
+        const successEventModuleSubscription  = challengeEventModule.addListener(
+            'LOGIN_SUCCESS', function (challenge) {
+                    alert("Login Success");
+            }
+        );
+        const logoutEventModuleSubscription  = challengeEventModule.addListener(
+            'LOGOUT_SUCESS', function (challenge) {
+                    alert("Logout Success");
+                    that.navigateToLogin();
+            }
+        );
+    }    
 }
+const challengeEventModule = new NativeEventEmitter(NativeModules.SecurityCheckChallengeHandlerEventEmitter);
 
 const styles = StyleSheet.create({
 	timesheet: {
 		height: 60,
 		flex: 1,
-		alignItems: 'center',
-		flexDirection: 'column',
+		alignItems: 'flex-start', 
+		margin: 2,
 	},
 	timesheetButton: {
 	    backgroundColor: '#3B5699'

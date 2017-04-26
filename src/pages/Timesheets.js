@@ -14,7 +14,11 @@ import Container from '../components/Container';
 import Button from '../components/Button';
 
 import GridView from 'react-native-grid-view';
-//var WLResourceRequestRN = require('NativeModules').WLResourceRequestRN;
+import autobind from 'autobind-decorator';
+
+import WLClientRN from '../wrappers/WLClientRN'
+import SecurityCheckChallengeHandlerRN from '../wrappers/SecurityCheckChallengeHandlerRN'
+import WLResourceRequestRN from '../wrappers/WLResourceRequestRN'
 
 var TIMESHEETS_PER_ROW = 2;
 
@@ -39,8 +43,17 @@ export default class Timesheets extends Component {
 		    this.state = {
 		      dataSource: null,
 	          loaded: false,
+	          message: '',
+	          loggedIn : false
 		    }
-	    }
+        	this.registerChallengeHandler();
+        	this.props.navigation.navigate("Login");
+    }
+
+
+    registerChallengeHandler() {
+        WLClientRN.registerChallengeHandler();
+    } 
 
     
 	  render() {
@@ -57,25 +70,46 @@ export default class Timesheets extends Component {
 	    );
 	  }
 
-	  componentDidMount() {
-	    this.fetchData();
-	  }
+	componentDidMount() {
+		if(this.state.loggedIn){
+	   		this.fetchData();
+		}else{
+        	this.props.navigation.navigate("Login");
+		}
+	}
 
-	  fetchData() {
-	  	this.setState({
-	           dataSource: [{"title":"Integration Services", "owner":"Anastasiya Khobnia"},{"title":"Park Keeping", "owner":"Anastasiya Khobnia"},{"title":"Rockwell Automation", "owner":"Anastasiya Khobnia"}],
-	           loaded: true,
-	         });
-	    // fetch(REQUEST_URL)
-	    //   .then((response) => response.json())
-	    //   .then((responseData) => {
-	    //     this.setState({
-	    //       dataSource: responseData.movies,
-	    //       loaded: true,
-	    //     });
-	    //   })
-	    //   .done();
+	loggedIn() {
+       return this.props.state.loggedIn;
+    }
+    
+    
+	fetchData() {
+	  	//testing grid
+	  	// this.setState({
+	   //         dataSource: [{"title":"Integration Services", "owner":"Anastasiya Khobnia"},{"title":"Park Keeping", "owner":"Anastasiya Khobnia"},{"title":"Rockwell Automation", "owner":"Anastasiya Khobnia"}],
+	   //         loaded: true,
+	   //       });
+	    this.getMFBlogEnriesAsPromise();
  	 }
+
+ 	async getMFBlogEnriesAsPromise() {
+        SecurityCheckChallengeHandlerRN.cancel();
+        var error = "";
+        //this.setState({ loaded: true, message: '' });
+        try {
+            var result
+            result = await WLResourceRequestRN.asyncRequestWithURL("/adapters/timesheetAdapter/statuses", WLResourceRequestRN.GET);
+            this.handleResponse(JSON.parse(result))
+        } catch (e) {
+            error = e;
+        }
+        this.setState({ loaded: false, message: error ? "Failed to retrieve entry - " + error.message : ""});
+    }
+
+    handleResponse(response) {
+    	response = [{"title":"Integration Services", "owner":"Anastasiya Khobnia"},{"title":"Park Keeping", "owner":"Anastasiya Khobnia"},{"title":"Rockwell Automation", "owner":"Anastasiya Khobnia"}];
+        this.setState({ loaded: true, message: '', dataSource: `${response}`});       
+    }
 
 	  renderLoadingView() {
 	    return (
@@ -93,10 +127,8 @@ export default class Timesheets extends Component {
   	}
 
   	
-    navTimesheet(){
-		this.props.navigator.push({
-			id: 'timesheet'
-		});
+    navTimesheet(title){
+		this.props.navigation.navigate('Timesheet', {timesheetTitle : "title"});
 	}
 }
 

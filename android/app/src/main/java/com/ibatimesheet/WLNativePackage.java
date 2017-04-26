@@ -5,6 +5,7 @@ import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
+import by.iba.gomel.avkhonia.MFReactNativeBind.SecurityCheckChallengeHandlerRN;
 import by.iba.gomel.avkhonia.MFReactNativeBind.WLResourceRequestRN;
 import by.iba.gomel.avkhonia.MFReactNativeBind.WLClientRN;
 
@@ -29,8 +30,9 @@ public class WLNativePackage implements ReactPackage {
             ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
 
-        modules.add(new WLResourceRequestRN(reactContext));
         modules.add(new WLClientRN(reactContext));
+        modules.add(new WLResourceRequestRN(reactContext));
+        modules.add(new SecurityCheckChallengeHandlerRN(reactContext));
         return modules;
     }
 }

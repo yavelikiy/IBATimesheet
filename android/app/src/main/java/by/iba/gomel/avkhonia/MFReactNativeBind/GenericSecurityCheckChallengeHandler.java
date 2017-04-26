@@ -25,9 +25,16 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.ibatimesheet.RNJSONUtils;
 // MF 8.0
-//import com.worklight.wlclient.api.challengehandler.SecurityCheckChallengeHandler;
-// MF 7.1
-import com.worklight.wlclient.api.challengehandler.WLChallengeHandler;
+import com.worklight.wlclient.api.challengehandler.SecurityCheckChallengeHandler;
+import com.worklight.wlclient.api.WLAccessTokenListener;
+import com.worklight.wlclient.api.WLAuthorizationManager;
+import com.worklight.wlclient.api.WLFailResponse;
+import com.worklight.wlclient.api.WLResourceRequest;
+import com.worklight.wlclient.api.WLResponse;
+import com.worklight.wlclient.api.WLResponseListener;
+import com.worklight.wlclient.api.WLLoginResponseListener;
+import com.worklight.wlclient.api.WLLogoutResponseListener;
+import com.worklight.wlclient.auth.AccessToken;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,61 +42,24 @@ import org.json.JSONObject;
 /**
  * Created by ishaib on 21/09/16.
  */
-public class GenericSecurityCheckChallengeHandler extends WLChallengeHandler{
+public class GenericSecurityCheckChallengeHandler extends SecurityCheckChallengeHandler{
     private ReactApplicationContext reactApplicationContext;
-    private String securityCheck;
+    private int remainingAttempts = -1;
+    private String errorMsg = "";
+    private boolean isChallenged = false;
 
-    public GenericSecurityCheckChallengeHandler(String securityCheck, ReactApplicationContext reactApplicationContext) {
-        super(securityCheck);
-        this.securityCheck = securityCheck;
+    public GenericSecurityCheckChallengeHandler(ReactApplicationContext reactApplicationContext) {
+        super(Constants.SECURITY_CHECK);
         this.reactApplicationContext = reactApplicationContext;
     }
 
     @Override
-    public void handleFailure(JSONObject jsonObject) {
-        //Log.d("Failure", jsonObject.toString());
-        // Intent intent = new Intent();
-        // intent.setAction(Constants.ACTION_CHALLENGE_FAILURE);
-        // try {
-        //     if (!jsonObject.isNull("failure")) {
-        //         intent.putExtra("errorMsg", jsonObject.getString("failure"));
-        //     } else {
-        //         intent.putExtra("errorMsg", "Unknown error");
-        //     }
-        // } catch (JSONException e) {
-        //     e.printStackTrace();
-        // }
-    }
-
-    @Override
-    public void handleSuccess(JSONObject jsonObject) {
-    }
-
-
-    // @Override
-    // public void handleChallenge(JSONObject jsonObject) {
-    //     Log.d("Handle Challenge", jsonObject.toString());
-    //     Log.d("Failure", jsonObject.toString());
-    //     Intent intent = new Intent();
-    //     intent.setAction(Constants.ACTION_CHALLENGE_RECEIVED);
-    //     try{
-    //         if (jsonObject.isNull("errorMsg")){
-    //             intent.putExtra("msg", "This data requires a PIN code.\n Remaining attempts: " + jsonObject.getString("remainingAttempts"));
-    //         } else {
-    //             intent.putExtra("msg", jsonObject.getString("errorMsg") + "\nRemaining attempts: " + jsonObject.getString("remainingAttempts"));
-    //         }
-    //     } catch (JSONException e) {
-    //         e.printStackTrace();
-    //     }
-
-    // }
-
-    @Override
     public void handleChallenge(JSONObject jsonObject) {
+        isChallenged = true;
         WritableMap params = null;
         try {
             params = RNJSONUtils.convertJsonToMap(jsonObject);
-            params.putString("securityCheck", this.securityCheck);
+            params.putString("securityCheck", Constants.SECURITY_CHECK);
             reactApplicationContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
             sendEvent(reactApplicationContext, "handleChallenge", params);
         } catch (JSONException e) {
@@ -105,53 +75,73 @@ public class GenericSecurityCheckChallengeHandler extends WLChallengeHandler{
                 .emit(eventName, params);
     }
 
-    // public void login(JSONObject credentials){
-    //     if(isChallenged){
-    //         submitChallengeAnswer(credentials);
-    //     }
-    //     else{
-    //         WLAuthorizationManager.getInstance().login(securityCheckName, credentials, new WLLoginResponseListener() {
-    //             @Override
-    //             public void onSuccess() {
-    //                 Log.d(securityCheckName, "Login Preemptive Success");
+    @Override
+    public void cancel() {
+        try {
+            super.cancel();
+        } catch (Exception e) {
+            Log.d(this.getClass().getCanonicalName(), e.getMessage());
+        }
+    }
 
-    //             }
+    @Override
+    public void handleFailure(JSONObject jsonObject) {
+        WritableMap params = null;
+        try {
+            params = RNJSONUtils.convertJsonToMap(jsonObject);
+            params.putString("securityCheck", Constants.SECURITY_CHECK);
+            if (!jsonObject.isNull("failure")) {
+                params.putString("errorMsg", jsonObject.getString("failure"));
+            } else {
+                params.putString("errorMsg", "Unknown error");
+            }
+            reactApplicationContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
+            sendEvent(reactApplicationContext, "handleFailure", params);
+        } catch (JSONException e) {
+            Log.e(this.getClass().getCanonicalName(), e.getMessage(), e);
+        }
+    }
 
-    //             @Override
-    //             public void onFailure(WLFailResponse wlFailResponse) {
-    //                 Log.d(securityCheckName, "Login Preemptive Failure");
-    //             }
-    //         });
-    //     }
-    // }
 
-    // public void logout(){
-    //     WLAuthorizationManager.getInstance().logout(securityCheckName, new WLLogoutResponseListener() {
-    //         @Override
-    //         public void onSuccess() {
-    //             Log.d(securityCheckName, "Logout Success");
+    @Override
+    public void handleSuccess(JSONObject identity) {
+        reactApplicationContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
+        sendEvent(reactApplicationContext, "handleSuccess", null);
+    }
 
-    //             // Remove current user
-    //             SharedPreferences preferences = context.getSharedPreferences(Constants.PREFERENCES_FILE, Context.MODE_PRIVATE);
-    //             SharedPreferences.Editor editor = preferences.edit();
-    //             editor.remove(Constants.PREFERENCES_KEY_USER);
-    //             editor.apply();
-    //             Log.d(securityCheckName, "Current user removed...");
 
-    //             Intent intent = new Intent();
-    //             intent.setAction(Constants.ACTION_LOGOUT_SUCCESS);
-    //             broadcastManager.sendBroadcast(intent);
-    //         }
+    public void login(JSONObject credentials){
+        if(isChallenged){
+            submitChallengeAnswer(credentials);
+        }
+        else{
+            WLAuthorizationManager.getInstance().
+            login(Constants.SECURITY_CHECK, credentials, new WLLoginResponseListener() {
+                @Override
+                public void onSuccess() {
+                    reactApplicationContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
+                    sendEvent(reactApplicationContext, "handleSuccess", null);
+                }
 
-    //         @Override
-    //         public void onFailure(WLFailResponse wlFailResponse) {
-    //             Log.d(securityCheckName, "Logout Failure");
-    //             Intent intent = new Intent();
-    //             intent.setAction(Constants.ACTION_LOGOUT_FAILURE);
-    //             broadcastManager.sendBroadcast(intent);
+                @Override
+                public void onFailure(WLFailResponse wlFailResponse) {
+                }
+            });
+        }
+    }
 
-    //         }
-    //     });
-    // }
+    public void logout(){
+        WLAuthorizationManager.getInstance().logout(Constants.SECURITY_CHECK, new WLLogoutResponseListener() {
+            @Override
+            public void onSuccess() {
+            }
+
+            @Override
+            public void onFailure(WLFailResponse wlFailResponse) {
+
+            }
+        });
+    }
+
 
 }

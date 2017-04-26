@@ -25,18 +25,16 @@ import com.ibatimesheet.RNJSONUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 // MF 8.0
-//import com.worklight.wlclient.api.challengehandler.SecurityCheckChallengeHandler;
-// MF 7.1
-import com.worklight.wlclient.api.challengehandler.WLChallengeHandler;
+import com.worklight.wlclient.api.challengehandler.SecurityCheckChallengeHandler;
 
 /**
  * Created by ishaib on 15/09/16.
  */
 public class WLClientRN extends ReactContextBaseJavaModule {
-    WLChallengeHandler challengeHandler;
+    ReactApplicationContext reactContext;
     public WLClientRN(ReactApplicationContext reactContext) {
         super(reactContext);
-        WLClient client = WLClient.createInstance(reactContext);
+        this.reactContext = reactContext;
     }
 
     @Override
@@ -44,37 +42,16 @@ public class WLClientRN extends ReactContextBaseJavaModule {
         return "WLClientRN";
     }
 
-
     @ReactMethod
-    public WLChallengeHandler getChallengeHandler() {
-        return challengeHandler;
-    }
-
-    @ReactMethod
-    public void registerChallengeHandler(String securityCheck, ReactApplicationContext reactContext) {
-        if(this.challengeHandler !=null)
-            return;
-        this.challengeHandler = new GenericSecurityCheckChallengeHandler(securityCheck , reactContext);
-        WLClient.getInstance().registerChallengeHandler(this.challengeHandler);
-    }
-
-    @ReactMethod
-    public void cancel(String securityCheck) {
-        //if (challengeHandler != null)
-        //    challengeHandler.cancel();
-    }
-
-    @ReactMethod
-    public void submitChallengeAnswer(ReadableMap challengeAnswer) {
-
-        JSONObject answer;
-        try {
-            if (challengeHandler != null) {
-                answer = RNJSONUtils.convertMapToJson(challengeAnswer);
-                challengeHandler.submitChallengeAnswer(answer);
-            }
-        } catch (JSONException e) {
-            //Log.e(this.getClass().getCanonicalName(), e.getMessage(), e);
+    public void registerChallengeHandler() {
+        try{
+            WLClient.getInstance();
+        }catch(Exception e){
+            WLClient.createInstance(reactContext);           
+        }
+        SecurityCheckChallengeHandler securityCheckChallengeHandler = WLClient.getInstance().getSecurityCheckChallengeHandler(Constants.SECURITY_CHECK);
+        if (securityCheckChallengeHandler == null) {
+            WLClient.getInstance().registerChallengeHandler(new GenericSecurityCheckChallengeHandler(this.getReactApplicationContext()));
         }
     }
 }

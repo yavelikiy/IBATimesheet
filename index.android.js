@@ -21,6 +21,11 @@ import { StackNavigator } from 'react-navigation';
 import Login from './src/pages/Login';
 import Timesheets from './src/pages/Timesheets';
 import Timesheet from './src/pages/Timesheet';
+
+
+import WLClientRN from './src/wrappers/WLClientRN'
+import SecurityCheckChallengeHandlerRN from './src/wrappers/SecurityCheckChallengeHandlerRN'
+import WLResourceRequestRN from './src/wrappers/WLResourceRequestRN'
 /*export default class IBATimesheet extends Component {
   render() {
     return (
@@ -50,7 +55,7 @@ const onLoginButtonPress = () => {
    constructor(props) {
     super(props);
     this.state = { text: 'Useless Placeholder' };
-  }
+  }.0.qaqqqqq aok
 
   render() {
     return (
@@ -141,18 +146,18 @@ const styles = StyleSheet.create({
 });*/
 
 const IBATimesheet = StackNavigator({
-  Login: { 
-    screen: Login, 
-    headerMode : 'screen',
-    navigationOptions : { headerVisible: false }
-  },
-  Timesheets: { 
-    screen: Timesheets,
-    navigationOptions : { title: 'My Timesheets' }
-  },
-  Timesheet: { screen: Timesheet, 
-    navigationOptions : ({ navigation }) => ({ title: "${navigation.state.params.timesheetTitle"})
-  },
+    Timesheets: { 
+      screen: Timesheets,
+      navigationOptions : { title: 'My Timesheets' }
+    },
+    Login: { 
+      screen: Login, 
+      headerMode : 'screen',
+      navigationOptions : { headerVisible: false }
+    },
+    Timesheet: { screen: Timesheet, 
+      navigationOptions : ({ navigation }) => ({ title: `${navigation.state.params.timesheetTitle}`})
+    }
 });
 
 // class IBATimesheet extends React.Component{

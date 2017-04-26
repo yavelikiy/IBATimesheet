@@ -7,87 +7,118 @@ import {
   TextInput,
   ScrollView,
   Alert,
-  NativeModules
+  NativeModules,
+  NativeEventEmitter
 } from 'react-native';
 
 import Container from '../components/Container';
 import Button from '../components/Button';
 import Label from '../components/Label';
 
-import WLResourceRequestRN from '../wrappers/WLResourceRequestRN'
-import WLClientRN from '../wrappers/WLResourceRequestRN'
+import autobind from 'autobind-decorator';
+
+//import WLClientRN from '../wrappers/WLClientRN'
+import SecurityCheckChallengeHandlerRN from '../wrappers/SecurityCheckChallengeHandlerRN'
+//import WLResourceRequestRN from '../wrappers/WLResourceRequestRN'
 //var WLResourceRequestRN = require('NativeModules').WLResourceRequestRN;
 
 export default class Login extends Component {
   constructor(props) {
           super(props);
           this.state = {
-              isLoading: false,
-              message: 'Message'
-          };   
+            username: "",
+            password: "",
+            error: ""
+        };  
           //this.registerChallengeHandler();
       }
 
-    async getMFBlogEnriesAsPromise() {
-        //SecurityCheckChallengeHandlerRN.cancel("UserLogin");
-        var error = "";
-        this.setState({ isLoading: true, message: '' });
-        try {
-            var result
-            result = await WLResourceRequestRN.asyncRequestWithURL("/adapters/timesheetAdapter/statuses", WLResourceRequestRN.GET);
-            this.handleResponse(JSON.parse(result))
-        } catch (e) {
-            error = e;
-        }
-        this.setState({ isLoading: false, message: error ? "Failed to retrieve entry - " + error.message : ""});
+
+    componentDidMount() {
+         this.addListeners();
     }
 
-    getMFBlogEnriesAsCallback() {
-        //SecurityCheckChallengeHandlerRN.cancel("UserLogin");
-        var that = this;
-        this.setState({ isLoading: true, message: '' });
-        WLResourceRequestRN.requestWithURL("/adapters/timesheetAdapter/statuses", WLResourceRequestRN.GET,
-            (error) => {
-                //that.props.navigator.popToTop();
-                that.setState({ isLoading: false, message: error.message });
-            },
-            (result) => {
-                that.handleResponse(JSON.parse(result))
-                //that.setState({ isLoading: false, message: "" });
-            });
-    } 
+    // async getMFBlogEnriesAsPromise() {
+    //     //SecurityCheckChallengeHandlerRN.cancel("UserLogin");
+    //     var error = "";
+    //     this.setState({ isLoading: true, message: '' });
+    //     try {
+    //         var result
+    //         result = await WLResourceRequestRN.asyncRequestWithURL("/adapters/timesheetAdapter/statuses", WLResourceRequestRN.GET);
+    //         this.handleResponse(JSON.parse(result))
+    //     } catch (e) {
+    //         error = e;
+    //     }
+    //     this.setState({ isLoading: false, message: error ? "Failed to retrieve entry - " + error.message : ""});
+    // }
+
+    // getMFBlogEnriesAsCallback() {
+    //     //SecurityCheckChallengeHandlerRN.cancel("UserLogin");
+    //     var that = this;
+    //     this.setState({ isLoading: true, message: '' });
+    //     WLResourceRequestRN.requestWithURL("/adapters/timesheetAdapter/statuses", WLResourceRequestRN.GET,
+    //         (error) => {
+    //             //that.props.navigator.popToTop();
+    //             that.setState({ isLoading: false, message: error.message });
+    //         },
+    //         (result) => {
+    //             that.handleResponse(JSON.parse(result))
+    //             //that.setState({ isLoading: false, message: "" });
+    //         });
+    // } 
 
     navTimesheets(){
 		this.props.navigation.navigate('Timesheets');
 	}
 
     handleResponse(response) {
-  		Alert.alert('Navigate to sign in form..'+response[0]);
-        this.setState({ isLoading: false, message: '' });
-        // var beComponent = {
-        //     title: 'MF And ReactNative Demo',
-        //     component: null,
-        //     passProps: { entries: response.feed.entry }
-        // };
-        this.navTimesheets();
-        /*if (this.isLoginOnTop()) {
-            this.props.navigator.replace(beComponent);
-        } else {
-            this.props.navigator.push(beComponent);
-        }*/
+  		// Alert.alert('Navigate to sign in form..'+response[0]);
+    //     this.setState({ isLoading: false, message: '' });
+    //     // var beComponent = {
+    //     //     title: 'MF And ReactNative Demo',
+    //     //     component: null,
+    //     //     passProps: { entries: response.feed.entry }
+    //     // };
+         this.navTimesheets();
+    //     /*if (this.isLoginOnTop()) {
+    //         this.props.navigator.replace(beComponent);
+    //     } else {
+    //         this.props.navigator.push(beComponent);
+    //     }*/
         
     }
+	@autobind
+	pressForget() {
+		Alert.alert('Admins: A Trasko, U Liberau');
+	}
 
-  pressForget() {
-    Alert.alert('Go to admins, please :)');
-  }
+	@autobind
+	pressSignIn() {
+		//remove on MF test
+		//this.getMFBlogEnriesAsPromise();
+		//this.navTimesheets();onSubmitPressed() {
+		SecurityCheckChallengeHandlerRN.submitChallengeAnswer({ 'username': this.state.username.trim(), 'password': this.state.password.trim() });
+	}
 
-  pressSignIn() {
-  	//remove on MF test
-  	//this.getMFBlogEnriesAsPromise();
-    this.navTimesheets();
-  	
-  }
+	addListeners() {
+        var that = this;       
+        const challengeEventModuleSubscription  = challengeEventModule.addListener(
+            'handleChallenge', function (challenge) {
+                    alert("Wrong Credentials");
+            }
+        );
+        const failureEventModuleSubscription  = challengeEventModule.addListener(
+            'failureChallenge', function (challenge) {
+                    alert("Failed");
+            }
+        );
+        const successEventModuleSubscription  = challengeEventModule.addListener(
+            'successChallenge', function (challenge) {
+                    alert("Success");
+         			that.navTimesheets();
+            }
+        );
+    }    
 
   render() {
     return (
@@ -96,61 +127,76 @@ export default class Login extends Component {
           <Button 
               label="Forgot Login/Pass"
               styles={{button: styles.alignRight, label: styles.label}} 
-              onPress={this.pressForget.bind(this)} />
+              onPress={this.pressForget} />
       </Container>
       <Container>
-          <Label text="Username or Email" />
+          <Label text="Username" />
           <TextInput
-              style={styles.textInput}
+          		autoFocus={true}
+                autoCorrect={false}
+                autoCapitalize="none"
+                placeholder="APetrov"
+                onChange={(event) => this.setState({ username: event.nativeEvent.text }) }
+              	style={styles.textInput}
+              	value={this.state.username}
           />
       </Container>
       <Container>
-          <Label text="Password" />
+          <Label text="Lotus internet password" />
           <TextInput
               secureTextEntry={true}
+              onChange={(event) => this.setState({ password: event.nativeEvent.text }) }
               style={styles.textInput}
+              value={this.state.password}
           />
       </Container>
       <Container>
             <Button 
                 label="Sign In"
                 styles={{button: styles.primaryButton, label: styles.buttonWhiteText}} 
-                onPress={this.pressSignIn.bind(this)} />
+                onPress={this.pressSignIn} />
         </Container>
         <Container>
-          <Label text={this.state.message} />
-          </Container>
+        	<Text style={styles.error}>{this.props.message}</Text>
+        </Container>
       </ScrollView>
     );
   }
 }
+const challengeEventModule = new NativeEventEmitter(NativeModules.SecurityCheckChallengeHandlerEventEmitter);
 
 const styles = StyleSheet.create({
    scroll: {
       backgroundColor: '#E1D7D8',
       padding: 30,
       flexDirection: 'column'
-  },
-  label: {
-      color: '#0d8898',
-      fontSize: 20
-  },
-  alignRight: {
-      alignSelf: 'flex-end'
-  },
-  textInput: {
-      height: 80,
-      fontSize: 30,
-      backgroundColor: '#FFF'
-  },
-  buttonWhiteText: {
-      fontSize: 20,
-      color: '#FFF',
-  },
-  primaryButton: {
-      backgroundColor: '#3B5699'
-  },
-  footer: {
-     marginTop: 100
-  }
+	},
+	label: {
+	    color: '#0d8898',
+	    fontSize: 18
+	},
+	alignRight: {
+	    alignSelf: 'flex-end'
+	},
+	textInput: {
+	    height: 80,
+	    fontSize: 30,
+	    backgroundColor: '#FFF'
+	},
+	buttonWhiteText: {
+	    fontSize: 20,
+	    color: '#FFF',
+	},
+	primaryButton: {
+	    backgroundColor: '#3B5699'
+	},
+	footer: {
+	   marginTop: 100
+	},
+	error: {
+		marginBottom: 20,
+	    fontSize: 16,
+	    textAlign: 'center',
+	    color: 'red'
+	},
 });

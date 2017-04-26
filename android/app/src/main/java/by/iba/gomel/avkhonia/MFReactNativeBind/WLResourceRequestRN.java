@@ -34,14 +34,10 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by ishaib on 15/09/16.
- */
+
 public class WLResourceRequestRN extends ReactContextBaseJavaModule {
     public WLResourceRequestRN(ReactApplicationContext reactContext) {
         super(reactContext);
-        // use different module for this
-        //WLClient client = WLClient.createInstance(reactContext);
     }
 
     @Override
@@ -77,7 +73,6 @@ public class WLResourceRequestRN extends ReactContextBaseJavaModule {
             });
         } catch (IllegalViewOperationException e) {
             errorCallback.invoke(e.getMessage());
-        } finally{
         }
     }
 
@@ -94,7 +89,7 @@ public class WLResourceRequestRN extends ReactContextBaseJavaModule {
                     Log.d("Success", response.getResponseText());
                 }
                 public void onFailure(WLFailResponse response) {
-                    promise.reject(response.getErrorCode().getDescription(), response.getErrorMsg());
+                    promise.reject(response.getErrorStatusCode(), response.getErrorMsg());
                     Log.d("Failure", response.getErrorMsg());
                 }
             });

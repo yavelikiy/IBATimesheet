@@ -1,0 +1,14 @@
+{
+  "ecmaVersion": 5,
+  "plugins": {
+    "guess-types": {
+      
+    },
+    "outline": {
+      
+    },
+    "eslint": {
+      "configFile": "/home/avkhobnia/git/timesheet/IBATimesheet/.eslintrc.json"
+    }
+  }
+}

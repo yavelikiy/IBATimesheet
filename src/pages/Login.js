@@ -15,7 +15,7 @@ import Container from '../components/Container';
 import Button from '../components/Button';
 import Label from '../components/Label';
 
-import autobind from 'autobind-decorator';
+//import autobind from 'autobind-decorator';
 
 //import WLClientRN from '../wrappers/WLClientRN'
 import SecurityCheckChallengeHandlerRN from '../wrappers/SecurityCheckChallengeHandlerRN'
@@ -87,12 +87,12 @@ export default class Login extends Component {
     //     }*/
         
     }
-	@autobind
+	//@autobind
 	pressForget() {
 		Alert.alert('Admins: A Trasko, U Liberau');
 	}
 
-	@autobind
+	//@autobind
 	pressSignIn() {
 		//remove on MF test
 		//this.getMFBlogEnriesAsPromise();
@@ -108,7 +108,7 @@ export default class Login extends Component {
           <Button 
               label="Forgot Login/Pass"
               styles={{button: styles.alignRight, label: styles.label}} 
-              onPress={this.pressForget} />
+              onPress={() => this.pressForget()} />
       </Container>
       <Container>
           <Label text="Username" />
@@ -135,7 +135,7 @@ export default class Login extends Component {
             <Button 
                 label="Sign In"
                 styles={{button: styles.primaryButton, label: styles.buttonWhiteText}} 
-                onPress={this.pressSignIn} />
+                onPress={() => this.pressSignIn()} />
         </Container>
         <Container>
         	<Text style={styles.error}>{this.props.message}</Text>
@@ -161,7 +161,7 @@ export default class Login extends Component {
         const successEventModuleSubscription  = challengeEventModule.addListener(
             'LOGIN_SUCCESS', function (challenge) {
                     alert("Login Success");
-		this.props.navigation.back();
+		                this.props.navigation.goBack();
             }
         );
     }    

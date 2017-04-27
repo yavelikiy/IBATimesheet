@@ -7,6 +7,7 @@ import {
   TextInput,
   ScrollView,
   Alert,
+  TouchableHighlight,
   NativeModules,
   NativeEventEmitter
 } from 'react-native';
@@ -66,19 +67,27 @@ export default class Timesheets extends Component {
 
     
 	  render() {
-	  	if (!this.state.loaded) {
-	     return this.renderLoadingView();
-	    }
+	  	//if (!this.state.loaded) {
+	     //return this.renderLoadingView();
+	    //}
 	    var response = [{"title":"Integration Services", "owner":"Anastasiya Khobnia"},{"title":"Park Keeping", "owner":"Anastasiya Khobnia"},{"title":"Rockwell Automation", "owner":"Anastasiya Khobnia"}];
 	    return (
-	        	<GridView
+	    	<View style={styles.outerContainer}>
+	    			<GridView
 			        items={response}
 			        itemsPerRow={TIMESHEETS_PER_ROW}
 			        renderItem={(item) => this.renderItem(item)}
 			        style={styles.listView}
 			      />
+			      <View style={styles.circleContainer}>
+			      	<TouchableHighlight style={styles.circle}>
+			            <Text style={styles.circleText}>+</Text>
+			        </TouchableHighlight>
+			      </View>
+			</View>
 	    );
 	  }
+	        
 
   componentDidMount() {
     this.fetchData();
@@ -185,6 +194,34 @@ const styles = StyleSheet.create({
 	},
 	listView: {
 	  paddingTop: 20,
-	  backgroundColor: '#F5FCFF',
+	  backgroundColor: '#F5FCFF'
 	},
+	circle: {	    
+	    justifyContent: 'center',
+	    alignItems: 'center',
+	},
+	circleContainer: {
+		width: 70,
+	    height: 70,
+	    borderRadius: 70/2,
+	    backgroundColor: 'red',
+		alignItems: 'flex-end', 
+		position: 'absolute',
+	    shadowColor: "#000000",
+	    shadowOpacity: 0.8,
+	    shadowRadius: 2,
+	    shadowOffset: {
+	      height: 4,
+	      width: -4
+	    },
+	    bottom: 10,
+	    right: 10,
+	},
+	circleText: {
+	    fontSize: 40,
+	    color: 'white'
+	},
+	outerContainer:{
+		flex: 1,		
+	}
 });

@@ -46,29 +46,4 @@ const IBATimesheet = StackNavigator({
     }
 });
 
-// class IBATimesheet extends React.Component{
-//   var _navigator;
-
-//   render() {
-//     return (
-//       <Navigator
-//         initialRoute={{id: 'first'}}
-//         renderScene={this.navigatorRenderScene}/>
-//     );
-//   }
-
-//   navigatorRenderScene(route, navigator) {
-//     _navigator = navigator;
-//     switch (route.id) {
-//       case 'login':
-//         return (<Login navigator={navigator} title="Login"/>);
-//       case 'timesheets':
-//         return (<Second navigator={navigator} title="Timesheets" />);
-//       case 'timesheet':
-//         return (<Second navigator={navigator} title="Timesheet" />);
-//     }
-//   }
-// }
-
-
 AppRegistry.registerComponent('IBATimesheet', () => IBATimesheet);

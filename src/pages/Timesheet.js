@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 
 import Container from '../components/Container';
-import Button from '../components/Calendar';
+import Calendar from '../components/Calendar';
 import Label from '../components/Label';
 
 export default class Timesheet extends Component {
@@ -27,8 +27,8 @@ export default class Timesheet extends Component {
 	    }
 
    
-    handleDateSelect(date) {
-        alert(`clicked: ${this.state.date.toString()}`);
+    handleDateSelect(date, timeType) {
+    	this.props.navigation.navigate('TimesheetTimeValuePicker', {selected : `${timeType}`, timeTypes: `${timeTypes}`});
     }
 
     render() {
@@ -39,6 +39,7 @@ export default class Timesheet extends Component {
         );
     }
 }
+const timeTypes = ["8", "7", "П", "В", "ОТ"];
 
 const styles = StyleSheet.create({
 	 scroll: {

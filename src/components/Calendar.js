@@ -7,6 +7,7 @@ import {
     TouchableOpacity,
 } from "react-native";
 
+
 export default class Calendar extends PureComponent {
 
     static get defaultProps() {
@@ -24,7 +25,11 @@ export default class Calendar extends PureComponent {
                 "April",   "May",      "June",
                 "July",    "August",   "September",
                 "October", "November", "December"
-            ]
+            ],
+            dayValues: null,
+            workdayDefault: "8",
+            weekendDefault: "В",
+            holydayDefault: "П",
         };
     }
 
@@ -37,16 +42,14 @@ export default class Calendar extends PureComponent {
             dayNames: React.PropTypes.array,
             monthNames: React.PropTypes.array,
             weekFirstDay: React.PropTypes.number,
+            dayValues: React.PropTypes.array,
         };
     }
-    
-    handleDayPress(dateNumber) {
-        if (this.props.onDateSelect !== null) {
-            const month = this.props.date.getMonth();
-            const year  = this.props.date.getFullYear();
-            const selectedDate = new Date(year, month, dateNumber);
 
-            this.props.onDateSelect(selectedDate);
+    handleDayPress(dateNumber, timeType) {
+        if (this.props.onDateSelect !== null) {
+
+            this.props.onDateSelect(dateNumber,timeType);
         }
     }
 
@@ -96,19 +99,28 @@ export default class Calendar extends PureComponent {
 
     renderCalendarDay(index, dateNumber) {
         const weekDay = (index + this.props.weekFirstDay) % 7;
-        const isWeekend = weekDay === 0 || weekDay  === 6;
+        const isWeekend = weekDay === 5 || weekDay  === 6;
 
         const today = new Date();
         const isToday = this.props.date.getDate() === dateNumber &&
                         this.props.date.getMonth() === today.getMonth() &&
                         this.props.date.getFullYear() === today.getFullYear();
 
+        const timeType = this.props.dayValues == null ? 
+                        isWeekend ? 
+                            this.props.weekendDefault 
+                            : this.props.workdayDefault 
+                        : this.props.dayValues[index];
+
         return (
             <View key={dateNumber} style={styles.dayOuter}>
-                <TouchableOpacity onPress={() => this.handleDayPress(dateNumber)}>
+                <TouchableOpacity onPress={() => this.handleDayPress(dateNumber, timeType)}>
                     <View style={[styles.dayInner, isToday ? styles.todayDayInner : {}]}>
                         <Text style={[styles.dayText, isWeekend ? styles.dayWeekendText : {}]}>
                             {dateNumber}
+                        </Text>
+                        <Text style={[styles.dayValueText, isWeekend ? styles.dayWeekendText : {}]}>
+                            {timeType}
                         </Text>
                     </View>
                 </TouchableOpacity>
@@ -182,6 +194,8 @@ export default class Calendar extends PureComponent {
     }
 }
 
+const timeTypes = ["8", "7", "П", "В", "ОТ"];
+
 const styles = StyleSheet.create({
     calendar: {
         borderBottomWidth: 1,
@@ -214,9 +228,16 @@ const styles = StyleSheet.create({
     todayDayInner: {
         borderColor: "#BF360C"
     },
+    holidayText: {
+        borderColor: "#BF360C"
+    },
 
     dayText: {
         textAlign: "right",
+    },
+    dayValueText: {
+        textAlign: "left",
+        color: "black",
     },
 
     dayWeekendText: {

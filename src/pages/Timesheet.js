@@ -12,30 +12,32 @@ import {
 } from 'react-native';
 
 import Container from '../components/Container';
-import Button from '../components/Button';
+import Button from '../components/Calendar';
 import Label from '../components/Label';
 
 export default class Timesheet extends Component {
 	constructor(props) {
 	        super(props);
+	        // get date from timesheet props
 	        this.state = {
-	            message: '123'
+	            message: '123',
+            	date: new Date()
 	        };   
 	        //this.registerChallengeHandler();
 	    }
 
-  
-  render() {
-  	// Need a parent props!
-  	// const { navigate } = this.props.navigation;
-    return (
-        <ScrollView style={styles.scroll}>
-			<Container>
-			    <Label text="Timesheet" />
-			</Container>
-        </ScrollView>
-    );
-  }
+   
+    handleDateSelect(date) {
+        alert(`clicked: ${this.state.date.toString()}`);
+    }
+
+    render() {
+        return (
+            <Calendar
+                date={this.state.date}
+                onDateSelect={(date) => this.handleDateSelect(date)} />
+        );
+    }
 }
 
 const styles = StyleSheet.create({

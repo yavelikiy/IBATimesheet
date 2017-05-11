@@ -25,7 +25,7 @@ import WLResourceRequestRN from '../wrappers/WLResourceRequestRN'
 
 var TIMESHEETS_PER_ROW = 2;
 var _DEBUG = true;
-var TIMESHEET_LIST_REQUEST = "/adapters/timesheetAdapter/statuses";
+var TIMESHEET_LIST_REQUEST = "/adapters/timesheetAdapter/timesheets/my";
 
 class TimesheetsGridItem extends Component{
 	render(){
@@ -54,6 +54,7 @@ export default class Timesheets extends Component {
 		    }
         	this.registerChallengeHandler();
         	this.obtainAccessToken();
+        	this.addListeners();
     }
 
 
@@ -67,10 +68,9 @@ export default class Timesheets extends Component {
 
     
 	  render() {
-	  	//if (!this.state.loaded) {
-	     //return this.renderLoadingView();
-	    //}
-	    var response = [{"title":"Integration Services", "owner":"Anastasiya Khobnia"},{"title":"Park Keeping", "owner":"Anastasiya Khobnia"},{"title":"Rockwell Automation", "owner":"Anastasiya Khobnia"}];
+	  	if (!this.state.loaded) {
+	     return this.renderLoadingView();
+	    }
 	    return (
 	    	<View style={styles.outerContainer}>
 	    			<GridView
@@ -95,8 +95,8 @@ export default class Timesheets extends Component {
     
     
   fetchData() {
-  	this.handleResponse(null);
-    //this.getTimesheetListAsPromise();
+  	//is.handleResponse(null);
+    this.getTimesheetListAsPromise();
   }
 
   async getTimesheetListAsPromise() {

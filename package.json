@@ -12,7 +12,7 @@
     "autobind-decorator" : "git+https://github.com/andreypopp/autobind-decorator.git",
     "react": "16.0.0-alpha.6",
     "react-native": "0.43.3",
-    "react-native-grid-component": "^1.0.6",
+    "react-native-grid-view": "0.4.1",
     "react-navigation": "git+https://github.com/react-community/react-navigation.git"
   },
   "devDependencies": {

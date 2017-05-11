@@ -55,13 +55,13 @@ public class GenericSecurityCheckChallengeHandler extends SecurityCheckChallenge
 
     @Override
     public void handleChallenge(JSONObject jsonObject) {
-        Log.d("IBATimesheet", "Handle challenge");
         isChallenged = true;
         WritableMap params = null;
         try {
             params = RNJSONUtils.convertJsonToMap(jsonObject);
             params.putString("securityCheck", Constants.SECURITY_CHECK);
             reactApplicationContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
+            Log.d("IBATimesheet", "Handle challenge - LOGIN_REQUIRED event");
             sendEvent(reactApplicationContext, "LOGIN_REQUIRED", params);
         } catch (JSONException e) {
             Log.e("IBATimesheet", e.getMessage(), e);
@@ -110,6 +110,7 @@ public class GenericSecurityCheckChallengeHandler extends SecurityCheckChallenge
     public void handleSuccess(JSONObject identity) {
         isChallenged = false;
         reactApplicationContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
+        Log.d("IBATimesheet", "handleSuccess - LOGIN_SUCCESS event");
         sendEvent(reactApplicationContext, "LOGIN_SUCCESS", null);
     }
 
@@ -124,8 +125,9 @@ public class GenericSecurityCheckChallengeHandler extends SecurityCheckChallenge
             login(Constants.SECURITY_CHECK, credentials, new WLLoginResponseListener() {
                 @Override
                 public void onSuccess() {
-                    //reactApplicationContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
-                    //sendEvent(reactApplicationContext, "handleSuccess", null);
+                    reactApplicationContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
+                    Log.d("IBATimesheet", "login - LOGIN_SUCCESS event");
+                    sendEvent(reactApplicationContext, "LOGIN_SUCCESS", null);
                 }
 
                 @Override

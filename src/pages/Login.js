@@ -11,6 +11,8 @@ import {
   NativeEventEmitter
 } from 'react-native';
 
+import { NavigationActions } from 'react-navigation';
+
 import Container from '../components/Container';
 import Button from '../components/Button';
 import Label from '../components/Label';
@@ -26,8 +28,8 @@ export default class Login extends Component {
   constructor(props) {
           super(props);
           this.state = {
-            username: "",
-            password: "",
+            username: "SSvetlakou@gomel.iba.by",
+            password: "Passvv0rd4",
             error: ""
         };  
           //this.registerChallengeHandler();
@@ -160,8 +162,17 @@ export default class Login extends Component {
         );
         const successEventModuleSubscription  = challengeEventModule.addListener(
             'LOGIN_SUCCESS', function (challenge) {
-                    alert("Login Success");
-		                this.props.navigation.goBack();
+                    //alert("Login Success");
+		                //that.props.navigation.goBack();
+                    const resetAction = NavigationActions.reset({
+                      index: 0,
+                      actions: [
+                        NavigationActions.navigate({ 
+                          routeName: 'Timesheets',
+                          params: {loggedIn:true}})
+                      ]
+                    });
+                    that.props.navigation.dispatch(resetAction);
             }
         );
     }    

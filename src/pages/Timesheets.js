@@ -25,6 +25,7 @@ import WLResourceRequestRN from '../wrappers/WLResourceRequestRN'
 
 var TIMESHEETS_PER_ROW = 2;
 var _DEBUG = true;
+//var TIMESHEET_LIST_REQUEST = "/adapters/timesheetAdapter/statuses";
 var TIMESHEET_LIST_REQUEST = "/adapters/timesheetAdapter/timesheets/my";
 
 class TimesheetsGridItem extends Component{
@@ -33,28 +34,44 @@ class TimesheetsGridItem extends Component{
 		return(
 			<View style={styles.timesheet}>
 			    <Button 
-			        label={this.props.timesheet.title}
+			        label={this.props.timesheet.project.name}
 			        styles={{button: styles.timesheetButton, label: styles.label}} 
-			        onPress={() => navigate('Timesheet',{timesheetTitle : this.props.timesheet.title})}
+			        onPress={() => navigate('Timesheet',{timesheetTitle : this.props.timesheet.project.name, timesheetData: this.props.timesheet })}
 			         />
 			</View>
 		);
 	}
 }
+
+// class TimesheetsGridItem extends Component{
+// 	render(){
+// 		const {navigate} = this.props.navigation;
+// 		return(
+// 			<View style={styles.timesheet}>
+// 			    <Button 
+// 			        label={this.props.timesheet.title}
+// 			        styles={{button: styles.timesheetButton, label: styles.label}} 
+// 			        onPress={() => navigate('Timesheet',{timesheetTitle : this.props.timesheet.title})}
+// 			         />
+// 			</View>
+// 		);
+// 	}
+// }
 // cannot get navigate function. need to bind appropriately
 //	
 
 export default class Timesheets extends Component {
 	constructor(props) {
 	        super(props);
+	        const { params } = this.props.navigation.state;
 		    this.state = {
 		      dataSource: null,
 	          loaded: false,
-	          message: ''
+	          message: '',
+	          loggedIn: typeof(params) != "undefined" && typeof(params.loggedIn) != "undefined" ? params.loggedIn : false,
 		    }
         	this.registerChallengeHandler();
-        	this.obtainAccessToken();
-        	this.addListeners();
+        	//this.obtainAccessToken();
     }
 
 
@@ -74,7 +91,7 @@ export default class Timesheets extends Component {
 	    return (
 	    	<View style={styles.outerContainer}>
 	    			<GridView
-			        items={response}
+			        items={this.state.dataSource}
 			        itemsPerRow={TIMESHEETS_PER_ROW}
 			        renderItem={(item) => this.renderItem(item)}
 			        style={styles.listView}
@@ -90,7 +107,11 @@ export default class Timesheets extends Component {
 	        
 
   componentDidMount() {
-    this.fetchData();
+    this.addListeners();
+    if(!this.state.loggedIn)
+    	this.navigateToLogin();
+    else
+    	this.fetchData();
   }
     
     
@@ -109,13 +130,28 @@ export default class Timesheets extends Component {
       this.handleResponse(JSON.parse(result))
     } catch (e) {
       error = e;
+      this.setState({ loaded: false, message: error ? "Failed to retrieve entry - " + error.message : ""});
     }
-    this.setState({ loaded: false, message: error ? "Failed to retrieve entry - " + error.message : ""});
   }
 
   handleResponse(response) {
-    response = [{"title":"Integration Services", "owner":"Anastasiya Khobnia"},{"title":"Park Keeping", "owner":"Anastasiya Khobnia"},{"title":"Rockwell Automation", "owner":"Anastasiya Khobnia"}];
-    this.setState({ loaded: true, message: '', dataSource: `${response}`});       
+  	var timesheetsList = [];
+  	for(var i in response)
+	{
+	     var project_name = response[i].project.name;
+	     var project_owner = response[i].employee.fullName;
+	     var project_id = response[i].id;
+
+	     var project_month = response[i].yearMonth.month;
+
+	    timesheetsList.push({ 
+        "title" : project_name,
+        "id"  : project_id
+    	});
+	}
+  	if(_DEBUG)
+       alert(JSON.stringify(timesheetsList));
+    this.setState({ loaded: true, message: '', dataSource: response});       
   }
 
   renderLoadingView() {
@@ -166,12 +202,12 @@ export default class Timesheets extends Component {
     );
     const successEventModuleSubscription  = challengeEventModule.addListener(
       'LOGIN_SUCCESS', function (challenge) {
-      	if(_DEBUG)
-          alert("Login Success");
+      	//if(_DEBUG)
+        //  alert("Login Success - Timesheeets");
       }
     );
     const logoutEventModuleSubscription  = challengeEventModule.addListener(
-      'LOGOUT_SUCESS', function (challenge) {
+      'LOGOUT_SUCCESS', function (challenge) {
       	if(_DEBUG)
           alert("Logout Success");
         that.navigateToLogin();

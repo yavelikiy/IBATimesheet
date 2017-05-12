@@ -5,10 +5,12 @@ import {
   Text,
   View,
   TextInput,
-  ScrollView,
+  ScrollView, 
+  Switch,
   Alert,
   NativeModules,
-  NativeEventEmitter
+  NativeEventEmitter,
+  AsyncStorage
 } from 'react-native';
 
 import { NavigationActions } from 'react-navigation';
@@ -37,69 +39,38 @@ export default class Login extends Component {
 
 
     componentDidMount() {
-         this.addListeners();
+      AsyncStorage.getItem("username").then((value) => {
+        this.setState({"username": value});
+
+      }).done();
+      AsyncStorage.getItem("password").then((value) => {
+        this.setState({"password": value});
+
+      }).done();
+      if(this.state.username !== null && this.state.password !== null)
+        this.state.savePassword = true;
+      this.addListeners();
     }
 
-    // async getMFBlogEnriesAsPromise() {
-    //     //SecurityCheckChallengeHandlerRN.cancel("UserLogin");
-    //     var error = "";
-    //     this.setState({ isLoading: true, message: '' });
-    //     try {
-    //         var result
-    //         result = await WLResourceRequestRN.asyncRequestWithURL("/adapters/timesheetAdapter/statuses", WLResourceRequestRN.GET);
-    //         this.handleResponse(JSON.parse(result))
-    //     } catch (e) {
-    //         error = e;
-    //     }
-    //     this.setState({ isLoading: false, message: error ? "Failed to retrieve entry - " + error.message : ""});
-    // }
-
-    // getMFBlogEnriesAsCallback() {
-    //     //SecurityCheckChallengeHandlerRN.cancel("UserLogin");
-    //     var that = this;
-    //     this.setState({ isLoading: true, message: '' });
-    //     WLResourceRequestRN.requestWithURL("/adapters/timesheetAdapter/statuses", WLResourceRequestRN.GET,
-    //         (error) => {
-    //             //that.props.navigator.popToTop();
-    //             that.setState({ isLoading: false, message: error.message });
-    //         },
-    //         (result) => {
-    //             that.handleResponse(JSON.parse(result))
-    //             //that.setState({ isLoading: false, message: "" });
-    //         });
-    // } 
 
     navTimesheets(){
 		this.props.navigation.navigate('Timesheets');
 	}
 
-    handleResponse(response) {
-  		// Alert.alert('Navigate to sign in form..'+response[0]);
-    //     this.setState({ isLoading: false, message: '' });
-    //     // var beComponent = {
-    //     //     title: 'MF And ReactNative Demo',
-    //     //     component: null,
-    //     //     passProps: { entries: response.feed.entry }
-    //     // };
-         this.navTimesheets();
-    //     /*if (this.isLoginOnTop()) {
-    //         this.props.navigator.replace(beComponent);
-    //     } else {
-    //         this.props.navigator.push(beComponent);
-    //     }*/
-        
-    }
-	//@autobind
+   
 	pressForget() {
 		Alert.alert('Admins: A Trasko, U Liberau');
 	}
 
-	//@autobind
 	pressSignIn() {
 		//remove on MF test
 		//this.getMFBlogEnriesAsPromise();
 		//this.navTimesheets();onSubmitPressed() {
-		Alert.alert('Try to login');
+    if(this.state.savePassword){
+      AsyncStorage.multiSet([['username', this.state.username],['password', this.state.password]]);
+    }else{
+      AsyncStorage.multiREmove(['username', 'password']);
+    }
 		SecurityCheckChallengeHandlerRN.login({ 'username': this.state.username.trim(), 'password': this.state.password.trim() });
 	}
 
@@ -118,7 +89,7 @@ export default class Login extends Component {
           		autoFocus={true}
                 autoCorrect={false}
                 autoCapitalize="none"
-                placeholder="APetrov"
+                placeholder="APetrov@gomel.iba.by"
                 onChange={(event) => this.setState({ username: event.nativeEvent.text }) }
               	style={styles.textInput}
               	value={this.state.username}
@@ -132,6 +103,8 @@ export default class Login extends Component {
               style={styles.textInput}
               value={this.state.password}
           />
+           <Text>Save credentials</Text>
+           <Switch onValueChange={(value) => this.setState({savePassword: value})} style={{marginBottom: 10}} value={this.state.savePassword} /> 
       </Container>
       <Container>
             <Button 
@@ -154,13 +127,13 @@ export default class Login extends Component {
                     // set up message view
             }
         );
-        const failureEventModuleSubscription  = challengeEventModule.addListener(
+        const failureEventModuleSubscription  = failedEventModule.addListener(
             'LOGIN_FAILED', function (challenge) {
                     alert("Login Failed");
                     // set up message view
             }
         );
-        const successEventModuleSubscription  = challengeEventModule.addListener(
+        const successEventModuleSubscription  = successEventModule.addListener(
             'LOGIN_SUCCESS', function (challenge) {
                     //alert("Login Success");
 		                //that.props.navigation.goBack();
@@ -178,6 +151,8 @@ export default class Login extends Component {
     }    
 }
 const challengeEventModule = new NativeEventEmitter(NativeModules.SecurityCheckChallengeHandlerEventEmitter);
+const successEventModule = new NativeEventEmitter(NativeModules.SecurityCheckChallengeHandlerEventEmitter);
+const failedEventModule = new NativeEventEmitter(NativeModules.SecurityCheckChallengeHandlerEventEmitter);
 
 const styles = StyleSheet.create({
    scroll: {

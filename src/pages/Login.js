@@ -49,6 +49,8 @@ export default class Login extends Component {
       }).done();
       if(this.state.username !== null && this.state.password !== null)
         this.state.savePassword = true;
+      else
+        this.state.savePassword = false;
       this.addListeners();
     }
 
@@ -69,7 +71,7 @@ export default class Login extends Component {
     if(this.state.savePassword){
       AsyncStorage.multiSet([['username', this.state.username],['password', this.state.password]]);
     }else{
-      AsyncStorage.multiREmove(['username', 'password']);
+      AsyncStorage.multiRemove(['username', 'password']);
     }
 		SecurityCheckChallengeHandlerRN.login({ 'username': this.state.username.trim(), 'password': this.state.password.trim() });
 	}

@@ -39,7 +39,6 @@ const IBATimesheet = StackNavigator({
     },
     Login: { 
       screen: Login, 
-      headerMode : 'screen',
       navigationOptions : { headerVisible: false }
     },
     TimesheetTimeValuePicker: { 

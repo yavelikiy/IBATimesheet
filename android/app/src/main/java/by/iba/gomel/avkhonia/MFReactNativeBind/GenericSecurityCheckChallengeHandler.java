@@ -62,7 +62,7 @@ public class GenericSecurityCheckChallengeHandler extends SecurityCheckChallenge
             params.putString("securityCheck", Constants.SECURITY_CHECK);
             reactApplicationContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
             Log.d("IBATimesheet", "Handle challenge - LOGIN_REQUIRED event");
-            sendEvent(reactApplicationContext, "LOGIN_REQUIRED", params);
+            sendEvent(reactApplicationContext, "LOGIN_REQUIRED", null);
         } catch (JSONException e) {
             Log.e("IBATimesheet", e.getMessage(), e);
         }

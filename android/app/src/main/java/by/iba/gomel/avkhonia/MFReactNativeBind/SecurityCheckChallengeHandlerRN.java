@@ -68,7 +68,7 @@ public class SecurityCheckChallengeHandlerRN extends ReactContextBaseJavaModule 
             ((GenericSecurityCheckChallengeHandler)securityCheckChallengeHandler).logout();
 
         }catch(Exception e){
-            Log.e(this.getClass().getCanonicalName(), e.getMessage(), e);
+            Log.e("IBATimesheet", e.getMessage(), e);
 
         }
     }

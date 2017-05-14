@@ -10,7 +10,8 @@ import {
   Alert,
   NativeModules,
   NativeEventEmitter,
-  AsyncStorage
+  AsyncStorage,
+  DeviceEventEmitter
 } from 'react-native';
 
 import { NavigationActions } from 'react-navigation';
@@ -32,7 +33,7 @@ export default class Login extends Component {
           this.state = {
             username: "SSvetlakou@gomel.iba.by",
             password: "Passvv0rd4",
-            error: ""
+            error: "No errors"
         };  
           //this.registerChallengeHandler();
       }
@@ -51,13 +52,22 @@ export default class Login extends Component {
         this.state.savePassword = true;
       else
         this.state.savePassword = false;
-      this.addListeners();
     }
 
 
-    navTimesheets(){
+  navTimesheets(){
 		this.props.navigation.navigate('Timesheets');
 	}
+
+  componentWillMount () {
+    //add all listeners when component mount
+    this.addListeners();
+  }
+
+  componentWillUnmount () {
+    //remove all listeners when component unmount
+    this.removeListeners();
+  }
 
    
 	pressForget() {
@@ -65,14 +75,17 @@ export default class Login extends Component {
 	}
 
 	pressSignIn() {
-		//remove on MF test
-		//this.getMFBlogEnriesAsPromise();
-		//this.navTimesheets();onSubmitPressed() {
+    if(this.state.username === '' || this.state.password === ''){
+      this.setState({error : 'Username & password cannot be empty.', password:''});
+      return;
+    }
+    //Save password to local storage
     if(this.state.savePassword){
       AsyncStorage.multiSet([['username', this.state.username],['password', this.state.password]]);
     }else{
       AsyncStorage.multiRemove(['username', 'password']);
     }
+    // Try to login with specified credentials
 		SecurityCheckChallengeHandlerRN.login({ 'username': this.state.username.trim(), 'password': this.state.password.trim() });
 	}
 
@@ -80,65 +93,77 @@ export default class Login extends Component {
     return (
         <ScrollView style={styles.scroll}>
           <Container>
-          <Button 
-              label="Forgot Login/Pass"
-              styles={{button: styles.alignRight, label: styles.label}} 
-              onPress={() => this.pressForget()} />
-      </Container>
-      <Container>
-          <Label text="Username" />
-          <TextInput
+            <Text style={styles.error} >{this.state.error}</Text>
+          </Container>
+          <Container>
+            <Label text="Username" />
+            <TextInput
           		autoFocus={true}
-                autoCorrect={false}
-                autoCapitalize="none"
-                placeholder="APetrov@gomel.iba.by"
-                onChange={(event) => this.setState({ username: event.nativeEvent.text }) }
-              	style={styles.textInput}
-              	value={this.state.username}
-          />
-      </Container>
-      <Container>
-          <Label text="Lotus internet password" />
-          <TextInput
+              autoCorrect={false}
+              autoCapitalize="none"
+              placeholder="APetrov@gomel.iba.by"                
+              selectTextOnFocus={true}
+              underlineColorAndroid="#29648A"
+              onChange={(event) => this.setState({ username: event.nativeEvent.text }) }
+              style={styles.textInput}
+              value={this.state.username}
+            />
+          </Container>
+          <Container>
+            <Label text="Lotus internet password" />
+            <TextInput
               secureTextEntry={true}
+              underlineColorAndroid="#29648A"         
+              selectTextOnFocus={true}
               onChange={(event) => this.setState({ password: event.nativeEvent.text }) }
               style={styles.textInput}
               value={this.state.password}
-          />
-           <Text>Save credentials</Text>
-           <Switch onValueChange={(value) => this.setState({savePassword: value})} style={{marginBottom: 10}} value={this.state.savePassword} /> 
-      </Container>
-      <Container>
+            />
+            <View style={styles.savePasswordContainer}>
+             <Text style={styles.savePasswordLabel}>Save credentials</Text>
+             <Switch 
+               onValueChange={(value) => this.setState({savePassword: value})}
+               onTintColor="#4492c4" 
+               thumbTintColor="#0066B3"
+               style={styles.savePasswordSwitch} 
+               value={this.state.savePassword} /> 
+            </View>
+          </Container>
+          <Container>
             <Button 
                 label="Sign In"
                 styles={{button: styles.primaryButton, label: styles.buttonWhiteText}} 
                 onPress={() => this.pressSignIn()} />
-        </Container>
-        <Container>
-        	<Text style={styles.error}>{this.props.message}</Text>
-        </Container>
-      </ScrollView>
+          </Container>
+          <Container>
+            <Button 
+              label="Forgot Login/Pass"
+              styles={{ label: styles.forgotPasswordLabel}} 
+              onPress={() => this.pressForget()} />
+          </Container>
+        </ScrollView>
     );
   }
 
   addListeners() {
         var that = this;       
-        const challengeEventModuleSubscription  = challengeEventModule.addListener(
-            'LOGIN_REQURIED', function (challenge) {
-                    alert("Login REQURIED");
-                    // set up message view
+        //need to login
+        this.challengeEventModuleSubscription  = DeviceEventEmitter.addListener(
+            'LOGIN_REQURIED', function (e) {
+              alert('failed');
+              that.setState({error : 'Username and/or password are incorrect.', password:''});
             }
         );
-        const failureEventModuleSubscription  = failedEventModule.addListener(
-            'LOGIN_FAILED', function (challenge) {
-                    alert("Login Failed");
-                    // set up message view
+        //login faild. Show message
+        this.failureEventModuleSubscription  = DeviceEventEmitter.addListener(
+            'LOGIN_FAILED', function (e) {
+              alert('failed');
+              that.setState({error : 'Username and/or password are incorrect.', password:''});
             }
         );
-        const successEventModuleSubscription  = successEventModule.addListener(
-            'LOGIN_SUCCESS', function (challenge) {
-                    //alert("Login Success");
-		                //that.props.navigation.goBack();
+        //Login succes. Redirect to Timesheets page. 
+        this.successEventModuleSubscription  = DeviceEventEmitter.addListener(
+            'LOGIN_SUCCESS', function (e) {
                     const resetAction = NavigationActions.reset({
                       index: 0,
                       actions: [
@@ -150,44 +175,57 @@ export default class Login extends Component {
                     that.props.navigation.dispatch(resetAction);
             }
         );
-    }    
+  }
+
+  removeListeners(){
+    this.challengeEventModuleSubscription.remove();
+    this.failureEventModuleSubscription.remove();
+    this.successEventModuleSubscription.remove();
+  }    
 }
-const challengeEventModule = new NativeEventEmitter(NativeModules.SecurityCheckChallengeHandlerEventEmitter);
-const successEventModule = new NativeEventEmitter(NativeModules.SecurityCheckChallengeHandlerEventEmitter);
-const failedEventModule = new NativeEventEmitter(NativeModules.SecurityCheckChallengeHandlerEventEmitter);
 
 const styles = StyleSheet.create({
    scroll: {
-      backgroundColor: '#E1D7D8',
+      backgroundColor: '#AAABB8',
       padding: 30,
       flexDirection: 'column'
 	},
-	label: {
-	    color: '#0d8898',
-	    fontSize: 18
+	forgotPasswordLabel: {
+	    color: '#0066B3',
+	    fontSize: 14,
+      margin: 0,
 	},
-	alignRight: {
-	    alignSelf: 'flex-end'
+	forgotPasswordButton: {
+      backgroundColor: '#29648A',
+      marginTop: 10,
 	},
 	textInput: {
 	    height: 80,
-	    fontSize: 30,
-	    backgroundColor: '#FFF'
+	    fontSize: 22,
+	    backgroundColor: '#FFF',
 	},
 	buttonWhiteText: {
 	    fontSize: 20,
 	    color: '#FFF',
 	},
-	primaryButton: {
-	    backgroundColor: '#3B5699'
-	},
-	footer: {
-	   marginTop: 100
-	},
+  primaryButton: {
+      backgroundColor: '#0066B3'
+  },
 	error: {
 		marginBottom: 20,
 	    fontSize: 16,
 	    textAlign: 'center',
-	    color: 'red'
+	    color: '#25274D'
 	},
+  savePasswordContainer: {
+      flexDirection: 'row'
+
+  },
+  savePasswordSwitch: {
+    alignSelf: 'flex-end',
+  },
+  savePasswordLabel: {
+    alignSelf: 'flex-start',
+    marginTop: 10, 
+  }
 });

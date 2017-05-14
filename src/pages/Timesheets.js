@@ -9,7 +9,8 @@ import {
   Alert,
   TouchableHighlight,
   NativeModules,
-  NativeEventEmitter
+  NativeEventEmitter,
+  DeviceEventEmitter
 } from 'react-native';
 
 import Container from '../components/Container';
@@ -28,6 +29,69 @@ var _DEBUG = true;
 //var TIMESHEET_LIST_REQUEST = "/adapters/timesheetAdapter/statuses";
 var TIMESHEET_LIST_REQUEST = "/adapters/timesheetAdapter/timesheets/my";
 
+const styles = StyleSheet.create({
+	timesheet: {
+		height: 60,
+		flex:2,
+		padding: 4,
+	},
+	timesheetButton: {
+	    backgroundColor: '#29648A',
+	    flex: 1,
+	    height: 40,
+	    margin:4,
+	},
+	timesheetButtonLabel: {
+	    fontSize: 16,
+	    color: '#FFF',
+	},
+	listView: {
+	  paddingTop: 20,
+	  backgroundColor: '#AAABB8'
+	},
+	circle: {	    
+	    justifyContent: 'center',
+	    alignItems: 'center',
+	    backgroundColor: '#25274D',
+		width: 62,
+	    height: 62,
+	    borderRadius: 62/2,
+	    shadowColor: "#000000",
+	    shadowOpacity: 0.8,
+	    shadowRadius: 2,
+	    shadowOffset: {
+	      height: 4,
+	      width: -4
+	    },
+	},
+	circleContainer: {
+	    justifyContent: 'center',
+		width: 66,
+	    height: 66,
+	    borderRadius: 66/2,
+	    backgroundColor: '#464866',
+		position: 'absolute',
+	    bottom: 10,
+	    right: 10,
+	},
+	circleText: {
+	    fontSize: 40,
+	    color: 'white'
+	},
+	outerContainer:{
+		flex: 1,		
+	},
+    barButton: {
+        backgroundColor: "#464866",
+        margin: 4,
+        padding: 6
+    },
+    barButtonLabel: {
+        color: "#FFF",
+        fontSize: 16,      
+    }
+});
+
 class TimesheetsGridItem extends Component{
 	render(){
 		const {navigate} = this.props.navigation;
@@ -35,7 +99,7 @@ class TimesheetsGridItem extends Component{
 			<View style={styles.timesheet}>
 			    <Button 
 			        label={this.props.timesheet.project.name}
-			        styles={{button: styles.timesheetButton, label: styles.label}} 
+			        styles={{button: styles.timesheetButton, label: styles.timesheetButtonLabel}} 
 			        onPress={() => navigate('Timesheet',{timesheetTitle : this.props.timesheet.project.name, timesheetData: this.props.timesheet })}
 			         />
 			</View>
@@ -74,6 +138,15 @@ export default class Timesheets extends Component {
         	//this.obtainAccessToken();
     }
 
+    static navigationOptions = { 
+        title: 'My Timesheets',
+        headerStyle: { backgroundColor: '#0066B3' },
+        headerTitleStyle: { color: '#FFF' },
+        headerRight: <TouchableHighlight style={styles.barButton} onPress={() => {alert('logout'); SecurityCheckChallengeHandlerRN.logout();}}>
+                        <Text style={styles.barButtonLabel}>Logout</Text>
+                    </TouchableHighlight>,
+    }
+
 
     registerChallengeHandler() {
         WLClientRN.registerChallengeHandler();
@@ -82,6 +155,11 @@ export default class Timesheets extends Component {
     obtainAccessToken() {
     	SecurityCheckChallengeHandlerRN.obtainAccessToken();
     } 
+
+    logout(){
+    	SecurityCheckChallengeHandlerRN.logout();
+    	this.navigateToLogin();
+    }
 
     
 	  render() {
@@ -97,7 +175,7 @@ export default class Timesheets extends Component {
 			        style={styles.listView}
 			      />
 			      <View style={styles.circleContainer}>
-			      	<TouchableHighlight style={styles.circle}>
+			      	<TouchableHighlight style={styles.circle} onPress={() => this.pressCreate()}>
 			            <Text style={styles.circleText}>+</Text>
 			        </TouchableHighlight>
 			      </View>
@@ -105,9 +183,15 @@ export default class Timesheets extends Component {
 	    );
 	  }
 	        
+  componentWillMount(){
+    this.addListeners();
+  }
+
+  componentWillUnmount(){
+  	this.removeListeners();
+  }
 
   componentDidMount() {
-    this.addListeners();
     if(!this.state.loggedIn)
     	this.navigateToLogin();
     else
@@ -116,12 +200,13 @@ export default class Timesheets extends Component {
     
     
   fetchData() {
-  	//is.handleResponse(null);
-    this.getTimesheetListAsPromise();
+  	//REMOVE THIS
+  	var data = [{"id":"296AE7429510E51D432581150057A97F","employee":{"fullName":"Светлаков Сергей Вадимович","notesAddr":null},"yearMonth":{"year":2017,"month":"MAY","leapYear":false,"monthValue":5},"project":{"name":"MAD"},"tables":[{"code":"8ч","day":19},{"code":"8ч","day":15},{"code":"8ч","day":24},{"code":"8ч","day":26},{"code":"В","day":28},{"code":"8ч","day":6},{"code":"8ч","day":30},{"code":"8ч","day":12},{"code":"В","day":21},{"code":"8ч","day":22},{"code":"В","day":20},{"code":"8ч","day":3},{"code":"8ч","day":5},{"code":"8ч","day":25},{"code":"8ч","day":11},{"code":"В","day":13},{"code":"8ч","day":4},{"code":"8ч","day":2},{"code":"П","day":9},{"code":"8ч","day":10},{"code":"8ч","day":23},{"code":"В","day":27},{"code":"8ч","day":18},{"code":"П","day":1},{"code":"В","day":8},{"code":"8ч","day":29},{"code":"8ч","day":16},{"code":"В","day":14},{"code":"В","day":7},{"code":"8ч","day":17}],"attributes":null,"status":"draft","comment":null,"report":null},{"id":"296AE7429510E51D432581150057A97F","employee":{"fullName":"Светлаков Сергей Вадимович","notesAddr":null},"yearMonth":{"year":2017,"month":"MAY","leapYear":false,"monthValue":5},"project":{"name":"Обучение 2Dept"},"tables":[{"code":"8ч","day":19},{"code":"8ч","day":15},{"code":"8ч","day":24},{"code":"8ч","day":26},{"code":"В","day":28},{"code":"8ч","day":6},{"code":"8ч","day":30},{"code":"8ч","day":12},{"code":"В","day":21},{"code":"8ч","day":22},{"code":"В","day":20},{"code":"8ч","day":3},{"code":"8ч","day":5},{"code":"8ч","day":25},{"code":"8ч","day":11},{"code":"В","day":13},{"code":"8ч","day":4},{"code":"8ч","day":2},{"code":"П","day":9},{"code":"8ч","day":10},{"code":"8ч","day":23},{"code":"В","day":27},{"code":"8ч","day":18},{"code":"П","day":1},{"code":"В","day":8},{"code":"8ч","day":29},{"code":"8ч","day":16},{"code":"В","day":14},{"code":"В","day":7},{"code":"8ч","day":17}],"attributes":null,"status":"draft","comment":null,"report":null},{"id":"296AE7429510E51D432581150057A97F","employee":{"fullName":"Светлаков Сергей Вадимович","notesAddr":null},"yearMonth":{"year":2017,"month":"MAY","leapYear":false,"monthValue":5},"project":{"name":"Integration Services"},"tables":[{"code":"8ч","day":19},{"code":"8ч","day":15},{"code":"8ч","day":24},{"code":"8ч","day":26},{"code":"В","day":28},{"code":"8ч","day":6},{"code":"8ч","day":30},{"code":"8ч","day":12},{"code":"В","day":21},{"code":"8ч","day":22},{"code":"В","day":20},{"code":"8ч","day":3},{"code":"8ч","day":5},{"code":"8ч","day":25},{"code":"8ч","day":11},{"code":"В","day":13},{"code":"8ч","day":4},{"code":"8ч","day":2},{"code":"П","day":9},{"code":"8ч","day":10},{"code":"8ч","day":23},{"code":"В","day":27},{"code":"8ч","day":18},{"code":"П","day":1},{"code":"В","day":8},{"code":"8ч","day":29},{"code":"8ч","day":16},{"code":"В","day":14},{"code":"В","day":7},{"code":"8ч","day":17}],"attributes":null,"status":"draft","comment":null,"report":null}];
+  	this.handleResponse(data);
+    //this.getTimesheetListAsPromise();
   }
 
   async getTimesheetListAsPromise() {
-    //SecurityCheckChallengeHandlerRN.cancel();
     var error = "";
     //this.setState({ loaded: true, message: '' });
     try {
@@ -149,8 +234,8 @@ export default class Timesheets extends Component {
         "id"  : project_id
     	});
 	}
-  	if(_DEBUG)
-       alert(JSON.stringify(timesheetsList));
+  	//if(_DEBUG)
+    //   alert(JSON.stringify(timesheetsList));
     this.setState({ loaded: true, message: '', dataSource: response});       
   }
 
@@ -182,31 +267,20 @@ export default class Timesheets extends Component {
     this.props.navigation.dispatch(resetAction);
   }
 
-
+  pressCreate(){
+  	alert('Create Timesheet');
+  }
 
   addListeners() {
     var that = this;       
-    const challengeEventModuleSubscription  = challengeEventModule.addListener(
+    this.challengeEventModuleSubscription  = DeviceEventEmitter.addListener(
       'LOGIN_REQURIED', function (challenge) {
       	if(_DEBUG)
           alert("Login REQURIED");
         that.navigateToLogin();
       }
     );
-    const failureEventModuleSubscription  = challengeEventModule.addListener(
-      'LOGIN_FAILED', function (challenge) {
-      	if(_DEBUG)
-          alert("Login Failed");
-        that.navigateToLogin();
-      }
-    );
-    const successEventModuleSubscription  = challengeEventModule.addListener(
-      'LOGIN_SUCCESS', function (challenge) {
-      	//if(_DEBUG)
-        //  alert("Login Success - Timesheeets");
-      }
-    );
-    const logoutEventModuleSubscription  = challengeEventModule.addListener(
+    this.logoutEventModuleSubscription  = DeviceEventEmitter.addListener(
       'LOGOUT_SUCCESS', function (challenge) {
       	if(_DEBUG)
           alert("Logout Success");
@@ -214,53 +288,12 @@ export default class Timesheets extends Component {
       }
     );
   }    
+
+
+  removeListeners(){
+    this.challengeEventModuleSubscription.remove();
+    this.logoutEventModuleSubscription.remove();
+  }    
 }
 const challengeEventModule = new NativeEventEmitter(NativeModules.SecurityCheckChallengeHandlerEventEmitter);
 
-const styles = StyleSheet.create({
-	timesheet: {
-		height: 60,
-		flex: 1,
-		alignItems: 'flex-start', 
-		margin: 2,
-	},
-	timesheetButton: {
-	    backgroundColor: '#3B5699',
-	    width: 170
-	},
-	listView: {
-	  paddingTop: 20,
-	  backgroundColor: '#F5FCFF'
-	},
-	circle: {	    
-	    justifyContent: 'center',
-	    alignItems: 'center',
-	    backgroundColor: 'red',
-		width: 62,
-	    height: 62,
-	    borderRadius: 62/2,
-	    shadowColor: "#000000",
-	    shadowOpacity: 0.8,
-	    shadowRadius: 2,
-	    shadowOffset: {
-	      height: 4,
-	      width: -4
-	    },
-	},
-	circleContainer: {
-		width: 70,
-	    height: 70,
-	    borderRadius: 70/2,
-	    backgroundColor: 'white',
-		position: 'absolute',
-	    bottom: 10,
-	    right: 10,
-	},
-	circleText: {
-	    fontSize: 40,
-	    color: 'white'
-	},
-	outerContainer:{
-		flex: 1,		
-	}
-});

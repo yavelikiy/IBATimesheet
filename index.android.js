@@ -10,10 +10,10 @@ import {
   AppRegistry,
   StyleSheet,
   Text,
-  Button,
   TextInput,
   Alert,
   View,
+  TouchableHighlight
 } from 'react-native';
 
 import { StackNavigator } from 'react-navigation';
@@ -29,13 +29,21 @@ import SecurityCheckChallengeHandlerRN from './src/wrappers/SecurityCheckChallen
 import WLResourceRequestRN from './src/wrappers/WLResourceRequestRN'
 
 
+const styles = StyleSheet.create({
+    barButton: {
+        backgroundColor: "#464866",
+        margin: 4,
+        padding: 6
+    },
+    barButtonLabel: {
+        color: "#FFF",
+        fontSize: 16,      
+    }
+});
+
 const IBATimesheet = StackNavigator({
     Timesheets: { 
       screen: Timesheets,
-      navigationOptions : { 
-        title: 'My Timesheets',
-        headerRight: <Button title="Logout" style="barButton"/>,
-      }
     },
     Login: { 
       screen: Login, 
@@ -46,22 +54,16 @@ const IBATimesheet = StackNavigator({
       headerMode : 'screen',
       navigationOptions : { 
         title: "Time Type",
-        headerRight: <Button title="Save" style="barButton"/>
       }
     },
     Timesheet: { screen: Timesheet, 
       navigationOptions : ({ navigation }) => ({ 
           title: `${navigation.state.params.timesheetTitle}`,
-          headerRight: <Button title="Options" style="barButton"/>
+          headerStyle: { backgroundColor: '#0066B3' },
+          headerTitleStyle: { color: '#FFF' },
       })
     }
 });
 
-const styles = StyleSheet.create({
-    barButton: {
-        backgroundColor: "white",
-        marginRight: 10,
-    }
-});
 
 AppRegistry.registerComponent('IBATimesheet', () => IBATimesheet);

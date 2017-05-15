@@ -32,10 +32,11 @@ export default class Timesheet extends Component {
     }
 
     render() {
+        alert(this.props.navigation.state.params.timesheet);
         return (
             <Calendar
                 date={this.state.date}
-                timesheet={this.props.timesheet}
+                timesheet={this.props.navigation.state.params.timesheet}
                 onDateSelect={(date) => this.handleDateSelect(date)} />
         );
     }

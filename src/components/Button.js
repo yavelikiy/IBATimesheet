@@ -19,6 +19,7 @@ const Button = (props) => {
         <TouchableHighlight 
             underlayColor="#ccc"
             onPress={props.onPress} 
+            disabled={props.disabled}
             style={[
                 props.noDefaultStyles ? '' : styles.button, 
                 props.styles ? props.styles.button : '']}

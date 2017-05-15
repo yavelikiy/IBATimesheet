@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "babel-plugin-transform-decorators-legacy": "^1.3.4",
-    "autobind-decorator" : "git+https://github.com/andreypopp/autobind-decorator.git",
     "react": "16.0.0-alpha.6",
     "react-native": "0.43.3",
     "react-native-grid-view": "0.4.1",

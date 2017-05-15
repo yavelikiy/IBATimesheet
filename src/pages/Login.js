@@ -31,12 +31,19 @@ export default class Login extends Component {
   constructor(props) {
           super(props);
           this.state = {
-            username: "SSvetlakou@gomel.iba.by",
-            password: "Passvv0rd4",
-            error: "No errors"
+            username: "",
+            password: "",
+            error: " ",
+            isLoading: false,
         };  
           //this.registerChallengeHandler();
       }
+
+    static navigationOptions= { 
+      headerVisible: false,
+      headerStyle: { backgroundColor: '#0066B3' },
+      headerTitleStyle: { color: '#FFF' },
+    };
 
 
     componentDidMount() {
@@ -85,24 +92,31 @@ export default class Login extends Component {
     }else{
       AsyncStorage.multiRemove(['username', 'password']);
     }
+    this.setState({error : 'Verifying credentials...', isLoading: true});
     // Try to login with specified credentials
 		SecurityCheckChallengeHandlerRN.login({ 'username': this.state.username.trim(), 'password': this.state.password.trim() });
 	}
 
   render() {
     return (
-        <ScrollView style={styles.scroll}>
+        <ScrollView 
+          style={styles.scroll}
+          keyboardShouldPersistTaps='always'
+        >
           <Container>
             <Text style={styles.error} >{this.state.error}</Text>
           </Container>
           <Container>
             <Label text="Username" />
             <TextInput
-          		autoFocus={true}
               autoCorrect={false}
               autoCapitalize="none"
+              editable={!this.state.isLoading}
               placeholder="APetrov@gomel.iba.by"                
               selectTextOnFocus={true}
+              onSubmitEditing={(event) => { 
+                this.refs.SecondInput.focus(); 
+              }}
               underlineColorAndroid="#29648A"
               onChange={(event) => this.setState({ username: event.nativeEvent.text }) }
               style={styles.textInput}
@@ -112,53 +126,57 @@ export default class Login extends Component {
           <Container>
             <Label text="Lotus internet password" />
             <TextInput
+              ref="SecondInput"
               secureTextEntry={true}
-              underlineColorAndroid="#29648A"         
+              underlineColorAndroid="#29648A"    
+              editable={!this.state.isLoading}     
               selectTextOnFocus={true}
               onChange={(event) => this.setState({ password: event.nativeEvent.text }) }
               style={styles.textInput}
               value={this.state.password}
             />
             <View style={styles.savePasswordContainer}>
-             <Text style={styles.savePasswordLabel}>Save credentials</Text>
-             <Switch 
-               onValueChange={(value) => this.setState({savePassword: value})}
-               onTintColor="#4492c4" 
-               thumbTintColor="#0066B3"
-               style={styles.savePasswordSwitch} 
-               value={this.state.savePassword} /> 
+              <Text style={styles.savePasswordLabel}>Save credentials</Text>
+              <Switch 
+                onValueChange={(value) => this.setState({savePassword: value})}
+                onTintColor="#4492c4" 
+                thumbTintColor="#0066B3"
+                style={styles.savePasswordSwitch} 
+                value={this.state.savePassword} /> 
             </View>
           </Container>
           <Container>
             <Button 
                 label="Sign In"
+                autoFocus={true}
+                disabled={this.state.isLoading}
                 styles={{button: styles.primaryButton, label: styles.buttonWhiteText}} 
                 onPress={() => this.pressSignIn()} />
-          </Container>
-          <Container>
-            <Button 
-              label="Forgot Login/Pass"
-              styles={{ label: styles.forgotPasswordLabel}} 
-              onPress={() => this.pressForget()} />
           </Container>
         </ScrollView>
     );
   }
+  // fix navigation and insert this
+          // <Container>
+          //   <Button 
+          //     label="Forgot Login/Pass"
+          //     styles={{ label: styles.forgotPasswordLabel}} 
+          //     onPress={() => this.pressForget()} />
+          // </Container>
 
   addListeners() {
         var that = this;       
         //need to login
         this.challengeEventModuleSubscription  = DeviceEventEmitter.addListener(
-            'LOGIN_REQURIED', function (e) {
-              alert('failed');
-              that.setState({error : 'Username and/or password are incorrect.', password:''});
+            'LOGIN_REQUIRED', function (e) {
+              that.setState({error : 'Username and/or password are incorrect.', password:'', isLoading: false});
             }
         );
         //login faild. Show message
         this.failureEventModuleSubscription  = DeviceEventEmitter.addListener(
             'LOGIN_FAILED', function (e) {
-              alert('failed');
-              that.setState({error : 'Username and/or password are incorrect.', password:''});
+              alert('Login faild');
+              that.setState({error : 'Username and/or password are incorrect.', password:'', isLoading: false});
             }
         );
         //Login succes. Redirect to Timesheets page. 
@@ -203,16 +221,18 @@ const styles = StyleSheet.create({
 	    height: 80,
 	    fontSize: 22,
 	    backgroundColor: '#FFF',
+      borderRadius: 4,
 	},
 	buttonWhiteText: {
 	    fontSize: 20,
 	    color: '#FFF',
 	},
   primaryButton: {
-      backgroundColor: '#0066B3'
+      backgroundColor: '#0066B3',
+      borderRadius: 4,
   },
 	error: {
-		marginBottom: 20,
+		marginBottom: 5,
 	    fontSize: 16,
 	    textAlign: 'center',
 	    color: '#25274D'
@@ -223,6 +243,7 @@ const styles = StyleSheet.create({
   },
   savePasswordSwitch: {
     alignSelf: 'flex-end',
+    marginTop: 5, 
   },
   savePasswordLabel: {
     alignSelf: 'flex-start',

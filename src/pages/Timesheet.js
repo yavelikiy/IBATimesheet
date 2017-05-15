@@ -28,13 +28,14 @@ export default class Timesheet extends Component {
 
    
     handleDateSelect(date, timeType) {
-    	this.props.navigation.navigate('TimesheetTimeValuePicker', {selected : `${timeType}`, timeTypes: `${timeTypes}`});
+    	//this.props.navigation.navigate('TimesheetTimeValuePicker', {selected : `${timeType}`, timeTypes: `${timeTypes}`});
     }
 
     render() {
         return (
             <Calendar
                 date={this.state.date}
+                timesheet={this.props.timesheet}
                 onDateSelect={(date) => this.handleDateSelect(date)} />
         );
     }

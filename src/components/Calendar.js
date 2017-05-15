@@ -26,7 +26,7 @@ export default class Calendar extends PureComponent {
                 "July",    "August",   "September",
                 "October", "November", "December"
             ],
-            dayValues: null,
+            timesheet: null,
             workdayDefault: "8",
             weekendDefault: "В",
             holydayDefault: "П",
@@ -42,13 +42,12 @@ export default class Calendar extends PureComponent {
             dayNames: React.PropTypes.array,
             monthNames: React.PropTypes.array,
             weekFirstDay: React.PropTypes.number,
-            dayValues: React.PropTypes.array,
+            timesheet: React.PropTypes.object,
         };
     }
 
     handleDayPress(dateNumber, timeType) {
         if (this.props.onDateSelect !== null) {
-
             this.props.onDateSelect(dateNumber,timeType);
         }
     }
@@ -106,11 +105,11 @@ export default class Calendar extends PureComponent {
                         this.props.date.getMonth() === today.getMonth() &&
                         this.props.date.getFullYear() === today.getFullYear();
 
-        const timeType = this.props.dayValues == null ? 
+        const timeType = this.props.timesheet == null ? 
                         isWeekend ? 
                             this.props.weekendDefault 
                             : this.props.workdayDefault 
-                        : this.props.dayValues[index];
+                        : this.props.timesheet.tables[index].code;
 
         return (
             <View key={dateNumber} style={styles.dayOuter}>

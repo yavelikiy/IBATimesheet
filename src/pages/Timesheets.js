@@ -10,11 +10,13 @@ import {
   TouchableHighlight,
   NativeModules,
   NativeEventEmitter,
-  DeviceEventEmitter
+  DeviceEventEmitter,
+  RefreshControl
 } from 'react-native';
 
 import Container from '../components/Container';
 import Button from '../components/Button';
+import TimesheetButtonOthers from '../components/TimesheetButtonOthers';
 
 import GridView from 'react-native-grid-view';
 //import autobind from 'autobind-decorator';
@@ -25,7 +27,7 @@ import SecurityCheckChallengeHandlerRN from '../wrappers/SecurityCheckChallengeH
 import WLResourceRequestRN from '../wrappers/WLResourceRequestRN'
 
 var TIMESHEETS_PER_ROW = 2;
-var _DEBUG = true;
+var _DEBUG = false;
 //var TIMESHEET_LIST_REQUEST = "/adapters/timesheetAdapter/statuses";
 var TIMESHEET_LIST_REQUEST = "/adapters/timesheetAdapter/timesheets/my";
 
@@ -40,6 +42,7 @@ const styles = StyleSheet.create({
 	    flex: 1,
 	    height: 40,
 	    margin:4,
+	    borderRadius: 4,
 	},
 	timesheetButtonLabel: {
 	    fontSize: 16,
@@ -83,8 +86,9 @@ const styles = StyleSheet.create({
 	},
     barButton: {
         backgroundColor: "#464866",
+	    borderRadius: 4,
         margin: 4,
-        padding: 6
+        padding: 10
     },
     barButtonLabel: {
         color: "#FFF",
@@ -94,15 +98,35 @@ const styles = StyleSheet.create({
 
 class TimesheetsGridItem extends Component{
 	render(){
-		const {navigate} = this.props.navigation;
 		return(
 			<View style={styles.timesheet}>
-			    <Button 
-			        label={this.props.timesheet.project.name}
-			        styles={{button: styles.timesheetButton, label: styles.timesheetButtonLabel}} 
-			        onPress={() => navigate('Timesheet',{timesheetTitle : this.props.timesheet.project.name, timesheetData: this.props.timesheet })}
-			         />
+				{ this.props.isMy ? this.getMyTimesheetButton() : this.getOthersTimesheetButton()}			
 			</View>
+		);
+	}
+
+	// showing the button for my timesheets
+	getMyTimesheetButton(){
+		const {navigate} = this.props.navigation;
+		return (
+			<Button 
+			    label={this.props.timesheet.project.name}
+			    styles={{button: styles.timesheetButton, label: styles.timesheetButtonLabel}} 
+			    onPress={() => navigate('Timesheet',{timesheetTitle : this.props.timesheet.project.name, timesheet: this.props.timesheet })}
+			/>
+		);
+	}
+
+	// showing button for others timesheets
+	// using owner name
+	getOthersTimesheetButton(){
+		const {navigate} = this.props.navigation;
+		return(
+			<TimesheetButtonOthers
+				owner="Хобня Анастасия Валентиновна"
+				project={this.props.timesheet.project.name}
+				onPress={() => navigate('Timesheet',{timesheetTitle : this.props.timesheet.project.name, timesheet: this.props.timesheet })}
+			/>
 		);
 	}
 }
@@ -132,6 +156,7 @@ export default class Timesheets extends Component {
 		      dataSource: null,
 	          loaded: false,
 	          message: '',
+	          refreshing: false,
 	          loggedIn: typeof(params) != "undefined" && typeof(params.loggedIn) != "undefined" ? params.loggedIn : false,
 		    }
         	this.registerChallengeHandler();
@@ -142,7 +167,7 @@ export default class Timesheets extends Component {
         title: 'My Timesheets',
         headerStyle: { backgroundColor: '#0066B3' },
         headerTitleStyle: { color: '#FFF' },
-        headerRight: <TouchableHighlight style={styles.barButton} onPress={() => {alert('logout'); SecurityCheckChallengeHandlerRN.logout();}}>
+        headerRight: <TouchableHighlight style={styles.barButton} onPress={() => {SecurityCheckChallengeHandlerRN.logout();}}>
                         <Text style={styles.barButtonLabel}>Logout</Text>
                     </TouchableHighlight>,
     }
@@ -173,6 +198,7 @@ export default class Timesheets extends Component {
 			        itemsPerRow={TIMESHEETS_PER_ROW}
 			        renderItem={(item) => this.renderItem(item)}
 			        style={styles.listView}
+			        refreshControl={ <RefreshControl refreshing={this.state.refreshing} onRefresh={() => this._onRefresh()} />}
 			      />
 			      <View style={styles.circleContainer}>
 			      	<TouchableHighlight style={styles.circle} onPress={() => this.pressCreate()}>
@@ -182,7 +208,13 @@ export default class Timesheets extends Component {
 			</View>
 	    );
 	  }
-	        
+	   
+
+   _onRefresh() { 
+   	 this.setState({refreshing: true}); 
+   	 this.fetchData(); 
+   }
+
   componentWillMount(){
     this.addListeners();
   }
@@ -212,7 +244,9 @@ export default class Timesheets extends Component {
     try {
       var result
       result = await WLResourceRequestRN.asyncRequestWithURL(TIMESHEET_LIST_REQUEST, WLResourceRequestRN.GET);
-      this.handleResponse(JSON.parse(result))
+      this.handleResponse(JSON.parse(result));
+      //if(_DEBUG)
+       alert(result);
     } catch (e) {
       error = e;
       this.setState({ loaded: false, message: error ? "Failed to retrieve entry - " + error.message : ""});
@@ -220,28 +254,14 @@ export default class Timesheets extends Component {
   }
 
   handleResponse(response) {
-  	var timesheetsList = [];
-  	for(var i in response)
-	{
-	     var project_name = response[i].project.name;
-	     var project_owner = response[i].employee.fullName;
-	     var project_id = response[i].id;
-
-	     var project_month = response[i].yearMonth.month;
-
-	    timesheetsList.push({ 
-        "title" : project_name,
-        "id"  : project_id
-    	});
-	}
-  	//if(_DEBUG)
+ 	//if(_DEBUG)
     //   alert(JSON.stringify(timesheetsList));
-    this.setState({ loaded: true, message: '', dataSource: response});       
+    this.setState({ loaded: true, message: '', dataSource: response, refreshing: false});       
   }
 
   renderLoadingView() {
     return (
-      <View>
+      <View style={{backgroundColor: '#AAABB8'}}>
         <Text>Loading data...</Text>
         <Text>{this.state.message}</Text>
       </View>
@@ -249,7 +269,7 @@ export default class Timesheets extends Component {
   }
 
   renderItem(item) {
-    return <TimesheetsGridItem timesheet={item} navigation={this.props.navigation}/>
+    return <TimesheetsGridItem timesheet={item} navigation={this.props.navigation} isMy={true}/>
   }
 
   	
@@ -282,8 +302,8 @@ export default class Timesheets extends Component {
     );
     this.logoutEventModuleSubscription  = DeviceEventEmitter.addListener(
       'LOGOUT_SUCCESS', function (challenge) {
-      	if(_DEBUG)
-          alert("Logout Success");
+      	//if(_DEBUG)
+        //  alert("Logout Success");
         that.navigateToLogin();
       }
     );

@@ -22,6 +22,7 @@ import Login from './src/pages/Login';
 import Timesheets from './src/pages/Timesheets';
 import Timesheet from './src/pages/Timesheet';
 import TimesheetTimeValuePicker from './src/pages/TimesheetTimeValuePicker';
+import CreateTimesheet from './src/pages/CreateTimesheet';
 
 
 import WLClientRN from './src/wrappers/WLClientRN'
@@ -62,6 +63,9 @@ const IBATimesheet = StackNavigator({
           headerStyle: { backgroundColor: '#0066B3' },
           headerTitleStyle: { color: '#FFF' },
       })
+    },
+    CreateTimesheet : {
+      screen: CreateTimesheet,
     }
 });
 

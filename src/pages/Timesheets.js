@@ -288,7 +288,13 @@ export default class Timesheets extends Component {
   }
 
   pressCreate(){
-  	alert('Create Timesheet');
+  	var params = {
+  		currentUserName: "",
+  		currentUserID: "123",
+  		users: ["Хобня","Светлаков"],
+  		projects:["IS","MAD", ""],
+  	};
+    this.props.navigation.navigate('CreateTimesheet', params);
   }
 
   addListeners() {

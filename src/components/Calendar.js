@@ -106,11 +106,11 @@ export default class Calendar extends PureComponent {
                         this.props.date.getMonth() === today.getMonth() &&
                         this.props.date.getFullYear() === today.getFullYear();
 
-        const timeType = this.props.timesheet == null ? 
+        const timeType = this.props.timesheet == null || typeof this.props.timesheet.tables[dateNumber-1] === "undefined"? 
                         isWeekend ? 
                             this.props.weekendDefault 
                             : this.props.workdayDefault 
-                        : this.props.timesheet.tables[index].code;
+                        : this.props.timesheet.tables[dateNumber-1].code;
 
         return (
             <View key={dateNumber} style={styles.dayOuter}>

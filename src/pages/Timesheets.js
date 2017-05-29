@@ -158,6 +158,7 @@ export default class Timesheets extends Component {
 	          message: '',
 	          refreshing: false,
 	          loggedIn: typeof(params) != "undefined" && typeof(params.loggedIn) != "undefined" ? params.loggedIn : false,
+	          useDebug: typeof(params) != "undefined" && typeof(params.useDebug) != "undefined" ? params.useDebug : false,
 		    }
         	this.registerChallengeHandler();
         	//this.obtainAccessToken();
@@ -233,9 +234,12 @@ export default class Timesheets extends Component {
     
   fetchData() {
   	//REMOVE THIS
-  	var data = [{"id":"296AE7429510E51D432581150057A97F","employee":{"fullName":"Светлаков Сергей Вадимович","notesAddr":null},"yearMonth":{"year":2017,"month":"MAY","leapYear":false,"monthValue":5},"project":{"name":"MAD"},"tables":[{"code":"8ч","day":19},{"code":"8ч","day":15},{"code":"8ч","day":24},{"code":"8ч","day":26},{"code":"В","day":28},{"code":"8ч","day":6},{"code":"8ч","day":30},{"code":"8ч","day":12},{"code":"В","day":21},{"code":"8ч","day":22},{"code":"В","day":20},{"code":"8ч","day":3},{"code":"8ч","day":5},{"code":"8ч","day":25},{"code":"8ч","day":11},{"code":"В","day":13},{"code":"8ч","day":4},{"code":"8ч","day":2},{"code":"П","day":9},{"code":"8ч","day":10},{"code":"8ч","day":23},{"code":"В","day":27},{"code":"8ч","day":18},{"code":"П","day":1},{"code":"В","day":8},{"code":"8ч","day":29},{"code":"8ч","day":16},{"code":"В","day":14},{"code":"В","day":7},{"code":"8ч","day":17}],"attributes":null,"status":"draft","comment":null,"report":null},{"id":"296AE7429510E51D432581150057A97F","employee":{"fullName":"Светлаков Сергей Вадимович","notesAddr":null},"yearMonth":{"year":2017,"month":"MAY","leapYear":false,"monthValue":5},"project":{"name":"Обучение 2Dept"},"tables":[{"code":"8ч","day":19},{"code":"8ч","day":15},{"code":"8ч","day":24},{"code":"8ч","day":26},{"code":"В","day":28},{"code":"8ч","day":6},{"code":"8ч","day":30},{"code":"8ч","day":12},{"code":"В","day":21},{"code":"8ч","day":22},{"code":"В","day":20},{"code":"8ч","day":3},{"code":"8ч","day":5},{"code":"8ч","day":25},{"code":"8ч","day":11},{"code":"В","day":13},{"code":"8ч","day":4},{"code":"8ч","day":2},{"code":"П","day":9},{"code":"8ч","day":10},{"code":"8ч","day":23},{"code":"В","day":27},{"code":"8ч","day":18},{"code":"П","day":1},{"code":"В","day":8},{"code":"8ч","day":29},{"code":"8ч","day":16},{"code":"В","day":14},{"code":"В","day":7},{"code":"8ч","day":17}],"attributes":null,"status":"draft","comment":null,"report":null},{"id":"296AE7429510E51D432581150057A97F","employee":{"fullName":"Светлаков Сергей Вадимович","notesAddr":null},"yearMonth":{"year":2017,"month":"MAY","leapYear":false,"monthValue":5},"project":{"name":"Integration Services"},"tables":[{"code":"8ч","day":19},{"code":"8ч","day":15},{"code":"8ч","day":24},{"code":"8ч","day":26},{"code":"В","day":28},{"code":"8ч","day":6},{"code":"8ч","day":30},{"code":"8ч","day":12},{"code":"В","day":21},{"code":"8ч","day":22},{"code":"В","day":20},{"code":"8ч","day":3},{"code":"8ч","day":5},{"code":"8ч","day":25},{"code":"8ч","day":11},{"code":"В","day":13},{"code":"8ч","day":4},{"code":"8ч","day":2},{"code":"П","day":9},{"code":"8ч","day":10},{"code":"8ч","day":23},{"code":"В","day":27},{"code":"8ч","day":18},{"code":"П","day":1},{"code":"В","day":8},{"code":"8ч","day":29},{"code":"8ч","day":16},{"code":"В","day":14},{"code":"В","day":7},{"code":"8ч","day":17}],"attributes":null,"status":"draft","comment":null,"report":null}];
-  	this.handleResponse(data);
-    //this.getTimesheetListAsPromise();
+  	if(this.state.useDebug){
+	  	var data = [{"id":"296AE7429510E51D432581150057A97F","employee":{"fullName":"Светлаков Сергей Вадимович","notesAddr":null},"yearMonth":{"year":2017,"month":"MAY","leapYear":false,"monthValue":5},"project":{"name":"MAD"},"tables":[{"code":"П","day":1},{"code":"8ч","day":2},{"code":"8ч","day":3},{"code":"8ч","day":4},{"code":"8ч","day":5},{"code":"8ч","day":6},{"code":"В","day":7},{"code":"В","day":8},{"code":"П","day":9},{"code":"8ч","day":10},{"code":"8ч","day":11},{"code":"8ч","day":12},{"code":"В","day":13},{"code":"В","day":14},{"code":"8ч","day":15},{"code":"8ч","day":16},{"code":"8ч","day":17},{"code":"8ч","day":18},{"code":"8ч","day":19},{"code":"В","day":20},{"code":"В","day":21},{"code":"8ч","day":22},{"code":"8ч","day":23},{"code":"8ч","day":24},{"code":"8ч","day":25},{"code":"8ч","day":26},{"code":"В","day":27},{"code":"В","day":28},{"code":"8ч","day":29},{"code":"8ч","day":30},{"code":"8ч","day":30}],"attributes":null,"status":"draft","comment":null,"report":null},{"id":"296AE7429510E51D432581150057A97F","employee":{"fullName":"Светлаков Сергей Вадимович","notesAddr":null},"yearMonth":{"year":2017,"month":"MAY","leapYear":false,"monthValue":5},"project":{"name":"Обучение 2Dept"},"tables":[{"code":"8ч","day":19},{"code":"8ч","day":15},{"code":"8ч","day":24},{"code":"8ч","day":26},{"code":"В","day":28},{"code":"8ч","day":6},{"code":"8ч","day":30},{"code":"8ч","day":12},{"code":"В","day":21},{"code":"8ч","day":22},{"code":"В","day":20},{"code":"8ч","day":3},{"code":"8ч","day":5},{"code":"8ч","day":25},{"code":"8ч","day":11},{"code":"В","day":13},{"code":"8ч","day":4},{"code":"8ч","day":2},{"code":"П","day":9},{"code":"8ч","day":10},{"code":"8ч","day":23},{"code":"В","day":27},{"code":"8ч","day":18},{"code":"П","day":1},{"code":"В","day":8},{"code":"8ч","day":29},{"code":"8ч","day":16},{"code":"В","day":14},{"code":"В","day":7},{"code":"8ч","day":17},{"code":"8ч","day":31}],"attributes":null,"status":"draft","comment":null,"report":null},{"id":"296AE7429510E51D432581150057A97F","employee":{"fullName":"Светлаков Сергей Вадимович","notesAddr":null},"yearMonth":{"year":2017,"month":"MAY","leapYear":false,"monthValue":5},"project":{"name":"Integration Services"},"tables":[{"code":"8ч","day":19},{"code":"8ч","day":15},{"code":"8ч","day":24},{"code":"8ч","day":26},{"code":"В","day":28},{"code":"8ч","day":6},{"code":"8ч","day":30},{"code":"8ч","day":31},{"code":"8ч","day":12},{"code":"В","day":21},{"code":"8ч","day":22},{"code":"В","day":20},{"code":"8ч","day":3},{"code":"8ч","day":5},{"code":"8ч","day":25},{"code":"8ч","day":11},{"code":"В","day":13},{"code":"8ч","day":4},{"code":"8ч","day":2},{"code":"П","day":9},{"code":"8ч","day":10},{"code":"8ч","day":23},{"code":"В","day":27},{"code":"8ч","day":18},{"code":"П","day":1},{"code":"В","day":8},{"code":"8ч","day":29},{"code":"8ч","day":16},{"code":"В","day":14},{"code":"В","day":7},{"code":"8ч","day":17}],"attributes":null,"status":"draft","comment":null,"report":null}];
+	  	this.handleResponse(data);
+  	}else{
+    	this.getTimesheetListAsPromise();
+    }
   }
 
   async getTimesheetListAsPromise() {
@@ -245,8 +249,8 @@ export default class Timesheets extends Component {
       var result
       result = await WLResourceRequestRN.asyncRequestWithURL(TIMESHEET_LIST_REQUEST, WLResourceRequestRN.GET);
       this.handleResponse(JSON.parse(result));
-      //if(_DEBUG)
-       alert(result);
+      if(_DEBUG)
+      	alert(result);
     } catch (e) {
       error = e;
       this.setState({ loaded: false, message: error ? "Failed to retrieve entry - " + error.message : ""});
@@ -254,8 +258,8 @@ export default class Timesheets extends Component {
   }
 
   handleResponse(response) {
- 	//if(_DEBUG)
-    //   alert(JSON.stringify(timesheetsList));
+ 	if(_DEBUG)
+       alert(JSON.stringify(timesheetsList));
     this.setState({ loaded: true, message: '', dataSource: response, refreshing: false});       
   }
 
@@ -274,7 +278,7 @@ export default class Timesheets extends Component {
 
   	
   navTimesheet(title){
-    this.props.navigation.navigate('Timesheet', {timesheetTitle : "title"});
+    this.props.navigation.navigate('Timesheet', {timesheetTitle : "title", useDebug : this.state.useDebug});
   }
 
   navigateToLogin(){
@@ -289,10 +293,8 @@ export default class Timesheets extends Component {
 
   pressCreate(){
   	var params = {
-  		currentUserName: "",
-  		currentUserID: "123",
-  		users: ["Хобня","Светлаков"],
-  		projects:["IS","MAD", ""],
+  		user: "Хобня",
+  		useDebug: this.state.useDebug,
   	};
     this.props.navigation.navigate('CreateTimesheet', params);
   }

@@ -35,6 +35,7 @@ export default class Login extends Component {
             password: "",
             error: " ",
             isLoading: false,
+            useDebug: false,
         };  
           //this.registerChallengeHandler();
       }
@@ -144,6 +145,15 @@ export default class Login extends Component {
                 style={styles.savePasswordSwitch} 
                 value={this.state.savePassword} /> 
             </View>
+            <View style={styles.savePasswordContainer}>
+              <Text style={styles.savePasswordLabel}>Use debug values</Text>
+              <Switch 
+                onValueChange={(value) => this.setState({useDebug: value})}
+                onTintColor="#4492c4" 
+                thumbTintColor="#0066B3"
+                style={styles.savePasswordSwitch} 
+                value={this.state.useDebug} /> 
+            </View>
           </Container>
           <Container>
             <Button 
@@ -187,7 +197,7 @@ export default class Login extends Component {
                       actions: [
                         NavigationActions.navigate({ 
                           routeName: 'Timesheets',
-                          params: {loggedIn:true}})
+                          params: {loggedIn:true, useDebug:that.state.useDebug}})
                       ]
                     });
                     that.props.navigation.dispatch(resetAction);

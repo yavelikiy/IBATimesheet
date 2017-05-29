@@ -32,7 +32,6 @@ export default class Timesheet extends Component {
     }
 
     render() {
-        alert(this.props.navigation.state.params.timesheet);
         return (
             <Calendar
                 date={this.state.date}

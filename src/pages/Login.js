@@ -19,6 +19,7 @@ import { NavigationActions } from 'react-navigation';
 import Container from '../components/Container';
 import Button from '../components/Button';
 import Label from '../components/Label';
+import BlueActivityIndicator from '../components/BlueActivityIndicator';
 
 //import autobind from 'autobind-decorator';
 
@@ -93,10 +94,18 @@ export default class Login extends Component {
     }else{
       AsyncStorage.multiRemove(['username', 'password']);
     }
+    //this.refs["indicator"].start();
     this.setState({error : 'Verifying credentials...', isLoading: true});
     // Try to login with specified credentials
 		SecurityCheckChallengeHandlerRN.login({ 'username': this.state.username.trim(), 'password': this.state.password.trim() });
 	}
+
+  chooseIndicator(){
+    if(this.state.isLoading)
+      return <BlueActivityIndicator ref="indicator"/>;
+    else
+      return <Text style={styles.error} >{this.state.error}</Text>
+  }
 
   render() {
     return (
@@ -104,9 +113,9 @@ export default class Login extends Component {
           style={styles.scroll}
           keyboardShouldPersistTaps='always'
         >
-          <Container>
-            <Text style={styles.error} >{this.state.error}</Text>
-          </Container>
+          <View>
+            {this.chooseIndicator()}
+          </View>
           <Container>
             <Label text="Username" />
             <TextInput
@@ -179,14 +188,15 @@ export default class Login extends Component {
         //need to login
         this.challengeEventModuleSubscription  = DeviceEventEmitter.addListener(
             'LOGIN_REQUIRED', function (e) {
+              //this.refs["indicator"].stop();
               that.setState({error : 'Username and/or password are incorrect.', password:'', isLoading: false});
             }
         );
         //login faild. Show message
         this.failureEventModuleSubscription  = DeviceEventEmitter.addListener(
             'LOGIN_FAILED', function (e) {
-              alert('Login faild');
-              that.setState({error : 'Username and/or password are incorrect.', password:'', isLoading: false});
+              //this.refs["indicator"].stop();
+              that.setState({error : 'Login failed.', password:'', isLoading: false});
             }
         );
         //Login succes. Redirect to Timesheets page. 

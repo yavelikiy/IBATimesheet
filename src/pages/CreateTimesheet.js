@@ -302,13 +302,12 @@ export default class CreateTimesheet extends Component {
     //this.setState({ loaded: true, message: '' });
     try {
       var result
-      result = await WLResourceRequestRN.asyncRequestWithURL(PROJECT_LIST_REQUEST+"?year="+year+"&month"+month, WLResourceRequestRN.GET);
+      result = await WLResourceRequestRN.asyncRequestWithURL(PROJECT_LIST_REQUEST+"?year="+year+"&month="+month, WLResourceRequestRN.GET);
+      alert(PROJECT_LIST_REQUEST+"?year="+year+"&month="+month+":"+result);
       this.handleResponse(JSON.parse(result));
-      //if(_DEBUG)
-      alert(result);
     } catch (e) {
       error = e;
-      this.setState({ message: error ? "Failed to retrieve entry - " + error.message : ""});
+      alert("Failed to retrieve entry - " + error.message : "");
     }
   }
 

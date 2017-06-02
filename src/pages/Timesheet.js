@@ -24,6 +24,7 @@ export default class Timesheet extends Component {
 	            message: '123',
             	date: new Date(),
             	isCalendarFocused : true,
+            	timesheet: this.props.navigation.state.params.timesheet,
 	        };   
 			    this.getHTML = this.getHTML.bind(this);
 					this.setFocusHandlers = this.setFocusHandlers.bind(this);
@@ -46,6 +47,13 @@ export default class Timesheet extends Component {
             date={this.state.date}
             timesheet={this.props.navigation.state.params.timesheet}
             onDateSelect={(date) => this.handleDateSelect(date)} />
+          <TextInput
+              underlineColorAndroid="#29648A"    
+              editable={false}     
+              onChange={(event) => this.setParams({ password: event.nativeEvent.text }) }
+              style={styles.textInput}
+              value={this.state.password}
+          />
           <TextInput onFocus={() => this.setState({isCalendarFocused : false})} >
           	{this.getPureComment()}
           </TextInput>

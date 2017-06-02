@@ -27,7 +27,7 @@ export default  class BlueActivityIndicator extends Component {
    render() { 
    	return ( 
    		<ActivityIndicator 
-   			animating={this.state.animating} 
+   			animating={this.props.animating} 
    			color="#0066B3"
    			style={styles.centering}/> 
    	); 

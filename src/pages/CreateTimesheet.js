@@ -14,14 +14,15 @@ import {
 } from 'react-native';
 
 import Label from '../components/Label';
-import DatePicker from '../components/DatePicker';
+import BlueActivityIndicator from '../components/BlueActivityIndicator';
 import { NavigationActions } from 'react-navigation'
 
 import WLResourceRequestRN from '../wrappers/WLResourceRequestRN'
 
 
 const PROJECT_LIST_REQUEST = "/adapters/timesheetAdapter/projects/my";
-const PROJECT_CREATE_REQUEST = "/adapters/timesheetAdapter/projects/create";
+const PROFILE_REQUEST = "/adapters/timesheetAdapter/profiles/my";
+const TIMESHEET_CREATE_REQUEST = "/adapters/timesheetAdapter/timesheets";
 const DEFAULT_PROJECT = "-- select one --";
 
 const styles = StyleSheet.create({
@@ -81,8 +82,8 @@ export default class CreateTimesheet extends Component {
         var curDate = new Date();
         var m = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         this.state = {
-        	user : "Хобня",
-        	users : ["Хобня", "Светлаков"],
+        	user : DEFAULT_PROJECT,
+        	users : [{ fullName : DEFAULT_PROJECT}],
         	projects : [{name: DEFAULT_PROJECT}],
         	months : m,
         	project : DEFAULT_PROJECT,
@@ -91,6 +92,7 @@ export default class CreateTimesheet extends Component {
         	year : curDate.getFullYear(),
         	message: 'error here',
 	        useDebug: typeof(params) != "undefined" && typeof(params.useDebug) != "undefined" ? params.useDebug : false,
+	        isLoading : false,
         };
 
         setParams({project:null, month: m[curDate.getMonth()], year:curDate.getFullYear()});
@@ -100,7 +102,25 @@ export default class CreateTimesheet extends Component {
         title: 'Create Timesheet',
         headerStyle: { backgroundColor: '#0066B3' },
         headerTitleStyle: { color: '#FFF' },
-        headerRight: <TouchableHighlight style={styles.barButton} onPress={() => {if(navigation.state.params.project === null) alert('Select a project, please.');}}>
+        headerRight: <TouchableHighlight 
+    					style={styles.barButton} 
+    					onPress={() => {
+        						if(navigation.state.params.project === null) 
+        							alert('Select a project, please.');
+        						timesheet = {yearMonth:"2017-06", project: {name: "MAD"}, employee:{fullName: "Светлаков Сергей Вадимович"}};
+							    var error = "";
+							    //this.setState({ loaded: true, message: '' });
+							    try {
+							      var result
+							      result = WLResourceRequestRN.asyncRequestWithURLBody(TIMESHEET_CREATE_REQUEST, WLResourceRequestRN.POST, JSON.stringify(timesheet));
+							      alert(JSON.stringify(response));
+							    } catch (e) {
+							      error = e;
+							      alert("Failed to retrieve entry - " + error.message : "");
+							    }
+    						}
+    					}
+        			>
                         <Text style={styles.barButtonLabel}>Create</Text>
                     </TouchableHighlight>,
     });
@@ -115,7 +135,7 @@ export default class CreateTimesheet extends Component {
     getAllUsernames(){
     	var result = [];
     	for(var i=0; i<this.state.users.length; i++){
-    		result.push( <Picker.Item label={this.state.users[i]} value={this.state.users[i]} />) ;
+    		result.push( <Picker.Item label={this.state.users[i].fullName} value={this.state.users[i].fullName} />) ;
     	}
     	return result;
     }
@@ -160,6 +180,7 @@ export default class CreateTimesheet extends Component {
     render() {
         return (
             <View style={styles.container}>
+            	<BlueActivityIndicator ref="indicator" animating={this.state.isLoading}/>
             	<Label text="Username" />
             	<View 
 	            	style={styles.picker}
@@ -167,6 +188,7 @@ export default class CreateTimesheet extends Component {
 		            <Picker 
 	            		style={styles.pickerText}
 		            	selectedValue={this.state.user}
+              			enabled={!this.state.isLoading}
 		            	onValueChange={(u) => this.changeUser(u)}
 		            > 
 		            	{this.getAllUsernames()}	
@@ -180,6 +202,7 @@ export default class CreateTimesheet extends Component {
 			            <Picker 
 		            		style={styles.pickerText}
 			            	selectedValue={this.state.month}
+              				enabled={!this.state.isLoading}
 			            	onValueChange={(m) => this.changeMonth(m)}
 			            > 
 			            	{this.getAllMonths()}	
@@ -191,6 +214,7 @@ export default class CreateTimesheet extends Component {
 			            <Picker 
 		            		style={styles.pickerText}
 			            	selectedValue={this.state.year}
+              				enabled={!this.state.isLoading}
 			            	onValueChange={(y) => this.changeYear(y)}
 			            > 
 			            	{this.getAllYears()}	
@@ -204,6 +228,7 @@ export default class CreateTimesheet extends Component {
 		            <Picker 
 		            	style={styles.pickerText}
 		            	selectedValue={this.state.project} 
+              			enabled={!this.state.isLoading}
 		            	onValueChange={(p) => this.changeProject(p)}
 		            > 
 		            	{this.getAllProjects()}	
@@ -222,7 +247,7 @@ export default class CreateTimesheet extends Component {
   }
 
   componentDidMount() {
-    this.fetchData(null,null);
+    this.fetchData();
   }
 
   navigateToLogin(){
@@ -255,7 +280,7 @@ export default class CreateTimesheet extends Component {
   	this.setState({month: m}); 
     const {setParams} = this.props.navigation;
     setParams({month: m});
-  	this.fetchData(null, m);
+  	this.fetchProjectList(null, m);
   }
 
   changeProject(p){
@@ -277,10 +302,16 @@ export default class CreateTimesheet extends Component {
   	this.setState({year: y}); 
     const {setParams} = this.props.navigation;
     setParams({year: y});
-  	this.fetchData(y, null);
+  	this.fetchProjectList(y, null);
   }
 
-  fetchData(year, month) {
+  fetchData() {
+  	this.setState({isLoading : true});
+  	//fetchProjectList(null, null);
+  	this.fetchProfileData();
+  }
+
+  fetchProjectList(year, month) {
   	//REMOVE THIS
   	if(year === null)
   		year = this.state.year;
@@ -291,9 +322,18 @@ export default class CreateTimesheet extends Component {
 
   	if(this.state.useDebug){
 	  	var data = [{"name": "MAD"},{"name": "Обучение 2nd Dept"}];
-	  	this.handleResponse(data);
+	  	this.handleProjectListResponse(data);
 	}else{
     	this.getProjectListAsPromise(year, month);
+    }
+  }
+
+  fetchProfileData(){
+  	if(this.state.useDebug){
+	  	var data = [{"fullName": "Светлаков Сергей", notesAddr: null}];
+	  	this.handleProfileResponse(data);
+	}else{
+    	this.getProfileAsPromise();
     }
   }
 
@@ -304,32 +344,62 @@ export default class CreateTimesheet extends Component {
       var result
       result = await WLResourceRequestRN.asyncRequestWithURL(PROJECT_LIST_REQUEST+"?year="+year+"&month="+month, WLResourceRequestRN.GET);
       alert(PROJECT_LIST_REQUEST+"?year="+year+"&month="+month+":"+result);
-      this.handleResponse(JSON.parse(result));
+      this.handleProjectListResponse(JSON.parse(result));
     } catch (e) {
       error = e;
       alert("Failed to retrieve entry - " + error.message : "");
     }
   }
 
-  async postProjectAsPromise(year, month) {
+
+  async getProfileAsPromise() {
     var error = "";
     //this.setState({ loaded: true, message: '' });
     try {
       var result
-      result = await WLResourceRequestRN.asyncRequestWithURL(PROJECT_CREATE_REQUEST+"?year="+year+"&month"+month, WLResourceRequestRN.POST);
-      this.handleResponse(JSON.parse(result));
-      //if(_DEBUG)
-      alert(result);
+      result = await WLResourceRequestRN.asyncRequestWithURL(PROFILE_REQUEST, WLResourceRequestRN.GET);
+      this.handleProfileResponse(JSON.parse(result));
     } catch (e) {
       error = e;
-      this.setState({ message: error ? "Failed to retrieve entry - " + error.message : ""});
+      alert("Failed to retrieve entry - " + error.message : "");
     }
   }
 
-  handleResponse(response) {
+  async postProjectAsPromise(timesheet) {
+  	timesheet = {yearMonth:"2017-06", project: {name: "MAD"}, employee:{fullName: "Светлаков Сергей Вадимович"}};
+    var error = "";
+    //this.setState({ loaded: true, message: '' });
+    try {
+      var result
+      result = await WLResourceRequestRN.asyncRequestWithURLBody(PROJECT_CREATE_REQUEST, WLResourceRequestRN.POST, timesheet);
+      this.handleResponse(JSON.parse(result));
+      alert(result);
+    } catch (e) {
+      error = e;
+      alert("Failed to retrieve entry - " + error.message : "");
+    }
+  }
+
+  handleProjectListResponse(response) {
  	//if(_DEBUG)
     //   alert(JSON.stringify(timesheetsList));
     response.unshift({name : DEFAULT_PROJECT});
-    this.setState({ message: '', projects : response});       
+    this.setState({ message: '', projects : response, isLoading : false});       
+  }
+
+  handleProfileResponse(response) {
+ 	//if(_DEBUG)
+ 	// isn't array now
+    //alert(JSON.stringify(response));
+    var users = [];
+    users.push(response);
+    this.setState({ message: '', users : users, user : response.fullName, isLoading : false});       
+  }
+
+  handleCreateTimesheetResponse(response) {
+ 	//if(_DEBUG)
+ 	// isn't array now
+    alert(JSON.stringify(response));
+    this.setState({ message: '', users : users, user : response.fullName, isLoading : false});       
   }
 }

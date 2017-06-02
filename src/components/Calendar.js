@@ -166,7 +166,7 @@ export default class Calendar extends PureComponent {
     render() {
         const date = this.props.date;
         let monthFirstDayOfWeek = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
-        monthFirstDayOfWeek = (monthFirstDayOfWeek - this.props.weekFirstDay + 7) % 7;
+        monthFirstDayOfWeek = (monthFirstDayOfWeek - this.props.weekFirstDay + 6) % 7;
         let daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
         let startDateNumber = 1;
 

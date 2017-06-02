@@ -34,8 +34,13 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.JSONObject;
+
 
 public class WLResourceRequestRN extends ReactContextBaseJavaModule {
+    public static final int DEFAULT_TIMEOUT = 10000;
+
+
     public WLResourceRequestRN(ReactApplicationContext reactContext) {
         super(reactContext);
     }
@@ -60,7 +65,7 @@ public class WLResourceRequestRN extends ReactContextBaseJavaModule {
             final Callback errorCallback,
             final Callback successCallback) {
         try {
-            WLResourceRequest request = new WLResourceRequest(URI.create(url),method);
+            WLResourceRequest request = new WLResourceRequest(URI.create(url),method, DEFAULT_TIMEOUT);
             request.send(new WLResponseListener(){
                 public void onSuccess(WLResponse response) {
                     successCallback.invoke(response.getResponseText());
@@ -82,7 +87,7 @@ public class WLResourceRequestRN extends ReactContextBaseJavaModule {
             String method,
             final Promise promise) {
         try {
-            WLResourceRequest request = new WLResourceRequest(URI.create(url),method);
+            WLResourceRequest request = new WLResourceRequest(URI.create(url),method, DEFAULT_TIMEOUT);
             request.send(new WLResponseListener(){
                 public void onSuccess(WLResponse response) {
                     promise.resolve(response.getResponseText());
@@ -94,6 +99,29 @@ public class WLResourceRequestRN extends ReactContextBaseJavaModule {
                 }
             });
         } catch (IllegalViewOperationException e) {
+            promise.reject("failure" ,e.getMessage(), e);
+        }
+    }
+
+    @ReactMethod
+    public void asyncRequestWithURLBody(
+            String url,
+            String method,
+            String params,
+            final Promise promise) {
+        try {
+            WLResourceRequest request = new WLResourceRequest(URI.create(url),method, DEFAULT_TIMEOUT);
+            request.send( new JSONObject(params), new WLResponseListener(){
+                public void onSuccess(WLResponse response) {
+                    promise.resolve(response.getResponseText());
+                    Log.d("Success", response.getResponseText());
+                }
+                public void onFailure(WLFailResponse response) {
+                    promise.reject(response.getErrorStatusCode(), response.getErrorMsg());
+                    Log.d("Failure", response.getErrorMsg());
+                }
+            });
+        } catch (Exception e) {
             promise.reject("failure" ,e.getMessage(), e);
         }
     }

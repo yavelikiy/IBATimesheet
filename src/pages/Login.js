@@ -102,7 +102,7 @@ export default class Login extends Component {
 
   chooseIndicator(){
     if(this.state.isLoading)
-      return <BlueActivityIndicator ref="indicator"/>;
+      return <BlueActivityIndicator ref="indicator" animating={this.state.isLoading}/>;
     else
       return <Text style={styles.error} >{this.state.error}</Text>
   }
@@ -188,14 +188,12 @@ export default class Login extends Component {
         //need to login
         this.challengeEventModuleSubscription  = DeviceEventEmitter.addListener(
             'LOGIN_REQUIRED', function (e) {
-              //this.refs["indicator"].stop();
               that.setState({error : 'Username and/or password are incorrect.', password:'', isLoading: false});
             }
         );
         //login faild. Show message
         this.failureEventModuleSubscription  = DeviceEventEmitter.addListener(
             'LOGIN_FAILED', function (e) {
-              //this.refs["indicator"].stop();
               that.setState({error : 'Login failed.', password:'', isLoading: false});
             }
         );

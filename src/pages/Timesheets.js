@@ -254,7 +254,8 @@ export default class Timesheets extends Component {
       	alert(result);
     } catch (e) {
       error = e;
-      this.setState({ loaded: false, message: error ? "Failed to retrieve entry - " + error.message : ""});
+      this.setState({ loaded: false, message: error ? "Failed to retrieve entry - " + error.message : "", refreshing: false});
+      alert("Failed to retrieve entry - " + error.message);
     }
   }
 

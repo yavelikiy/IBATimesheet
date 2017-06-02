@@ -95,7 +95,7 @@ export default class CreateTimesheet extends Component {
 	        isLoading : false,
         };
 
-        setParams({project:null, month: m[curDate.getMonth()], year:curDate.getFullYear()});
+        setParams({project:null, month: m[curDate.getMonth()], year:curDate.getFullYear(), months: m});
     }
 
 	static navigationOptions = ({ navigation }) => ({ 
@@ -105,19 +105,31 @@ export default class CreateTimesheet extends Component {
         headerRight: <TouchableHighlight 
     					style={styles.barButton} 
     					onPress={() => {
-        						if(navigation.state.params.project === null) 
+        						if(navigation.state.params.project === null) {
         							alert('Select a project, please.');
-        						timesheet = {yearMonth:"2017-06", project: {name: "MAD"}, employee:{fullName: "Светлаков Сергей Вадимович"}};
-							    var error = "";
-							    //this.setState({ loaded: true, message: '' });
-							    try {
-							      var result
-							      result = WLResourceRequestRN.asyncRequestWithURLBody(TIMESHEET_CREATE_REQUEST, WLResourceRequestRN.POST, JSON.stringify(timesheet));
-							      alert(JSON.stringify(response));
-							    } catch (e) {
-							      error = e;
-							      alert("Failed to retrieve entry - " + error.message : "");
-							    }
+        						}
+        						else{
+        							var month = (navigation.state.params.months.indexOf(navigation.state.params.month)+1);
+        							var user = navigation.state.params.user;
+        							var project = navigation.state.params.project;
+	        						var timesheet = {
+	        							yearMonth: navigation.state.params.year+"-"+month, 
+	        							project: {name: project}, 
+	        							employee:{fullName: user}
+	        						};
+	        						alert(JSON.stringify(timesheet));
+	        						CreateTimesheet.sendCreateTimesheetRequest(JSON.stringify(timesheet));
+								    // var error = "";
+								    // //this.setState({ loaded: true, message: '' });
+								    // try {
+								    //   var result
+								    //   result = WLResourceRequestRN.asyncRequestWithURLBody(TIMESHEET_CREATE_REQUEST, WLResourceRequestRN.POST, JSON.stringify(timesheet));
+								    //   alert(JSON.stringify(response));
+								    // } catch (e) {
+								    //   error = e;
+								    //   alert("Failed to retrieve entry - " + error.message : "");
+								    // }
+								}
     						}
     					}
         			>
@@ -126,8 +138,18 @@ export default class CreateTimesheet extends Component {
     });
 
 
-    static postProject(params){
 
+    static async sendCreateTimesheetRequest(timesheet){
+    	var error = "";
+	    //this.setState({ loaded: true, message: '' });
+	    try {
+	      var result
+	      result = await WLResourceRequestRN.asyncRequestWithURLBody(TIMESHEET_CREATE_REQUEST, WLResourceRequestRN.POST, timesheet);
+	      alert(JSON.stringify(result));
+	    } catch (e) {
+	      error = e;
+	      alert("Failed to retrieve entry - " + error.message);
+	    }
     }
 
 
@@ -277,7 +299,7 @@ export default class CreateTimesheet extends Component {
   } 
 
   changeMonth(m){
-  	this.setState({month: m}); 
+  	this.setState({month: m, isLoading: true}); 
     const {setParams} = this.props.navigation;
     setParams({month: m});
   	this.fetchProjectList(null, m);
@@ -299,7 +321,7 @@ export default class CreateTimesheet extends Component {
   }
 
   changeYear(y){
-  	this.setState({year: y}); 
+  	this.setState({year: y, isLoading: true}); 
     const {setParams} = this.props.navigation;
     setParams({year: y});
   	this.fetchProjectList(y, null);
@@ -343,7 +365,7 @@ export default class CreateTimesheet extends Component {
     try {
       var result
       result = await WLResourceRequestRN.asyncRequestWithURL(PROJECT_LIST_REQUEST+"?year="+year+"&month="+month, WLResourceRequestRN.GET);
-      alert(PROJECT_LIST_REQUEST+"?year="+year+"&month="+month+":"+result);
+      //alert(PROJECT_LIST_REQUEST+"?year="+year+"&month="+month+":"+result);
       this.handleProjectListResponse(JSON.parse(result));
     } catch (e) {
       error = e;

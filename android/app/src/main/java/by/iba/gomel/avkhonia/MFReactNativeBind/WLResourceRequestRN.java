@@ -86,7 +86,8 @@ public class WLResourceRequestRN extends ReactContextBaseJavaModule {
             String url,
             String method,
             final Promise promise) {
-        try {
+        try { 
+            Log.d("IBATimesheet", "REQUEST TO MFP - "+url);
             WLResourceRequest request = new WLResourceRequest(URI.create(url),method, DEFAULT_TIMEOUT);
             request.send(new WLResponseListener(){
                 public void onSuccess(WLResponse response) {

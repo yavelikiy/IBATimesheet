@@ -86,6 +86,10 @@ export default class Login extends Component {
 	pressSignIn() {
     if(this.state.username === '' || this.state.password === ''){
       this.setState({error : 'Username & password cannot be empty.', password:''});
+      Alert.alert(
+        'Error',
+        'Username & password cannot be empty.'
+      );
       return;
     }
     //Save password to local storage
@@ -95,7 +99,7 @@ export default class Login extends Component {
       AsyncStorage.multiRemove(['username', 'password']);
     }
     //this.refs["indicator"].start();
-    this.setState({error : 'Verifying credentials...', isLoading: true});
+    this.setState({ isLoading: true});
     // Try to login with specified credentials
 		SecurityCheckChallengeHandlerRN.login({ 'username': this.state.username.trim(), 'password': this.state.password.trim() });
 	}
@@ -104,7 +108,7 @@ export default class Login extends Component {
     if(this.state.isLoading)
       return <BlueActivityIndicator ref="indicator" animating={this.state.isLoading}/>;
     else
-      return <Text style={styles.error} >{this.state.error}</Text>
+      return <BlueActivityIndicator ref="indicator" animating={this.state.isLoading}/>
   }
 
   render() {
@@ -189,12 +193,30 @@ export default class Login extends Component {
         this.challengeEventModuleSubscription  = DeviceEventEmitter.addListener(
             'LOGIN_REQUIRED', function (e) {
               that.setState({error : 'Username and/or password are incorrect.', password:'', isLoading: false});
+              Alert.alert(
+                'Login required',
+                'Username and/or password are incorrect.'
+              );
             }
         );
         //login faild. Show message
         this.failureEventModuleSubscription  = DeviceEventEmitter.addListener(
             'LOGIN_FAILED', function (e) {
-              that.setState({error : 'Login failed.', password:'', isLoading: false});
+              that.setState({error : 'Login failed. '+e.errorMsg, password:'', isLoading: false});
+              Alert.alert(
+                'Login failed',
+                e.errorMsg
+              );
+            }
+        );
+        //login faild. Show message
+        this.connectionEventModuleSubscription  = DeviceEventEmitter.addListener(
+            'CONNECTION_ERROR', function (e) {
+              that.setState({error : 'Login failed. '+e.errorMsg, password:'', isLoading: false});
+              Alert.alert(
+                'Error',
+                e.errorMsg
+              );
             }
         );
         //Login succes. Redirect to Timesheets page. 
@@ -216,6 +238,7 @@ export default class Login extends Component {
   removeListeners(){
     this.challengeEventModuleSubscription.remove();
     this.failureEventModuleSubscription.remove();
+    this.connectionEventModuleSubscription.remove();
     this.successEventModuleSubscription.remove();
   }    
 }

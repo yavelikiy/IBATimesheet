@@ -92,7 +92,7 @@ export default class CreateTimesheet extends Component {
         	year : curDate.getFullYear(),
         	message: 'error here',
 	        useDebug: typeof(params) != "undefined" && typeof(params.useDebug) != "undefined" ? params.useDebug : false,
-	        isLoading : false,
+	        isLoading : true,
         };
 
         setParams({project:null, month: m[curDate.getMonth()], year:curDate.getFullYear(), months: m});
@@ -110,25 +110,16 @@ export default class CreateTimesheet extends Component {
         						}
         						else{
         							var month = (navigation.state.params.months.indexOf(navigation.state.params.month)+1);
+        							var textMonth = month > 9 ? ""+month : "0"+month; 
         							var user = navigation.state.params.user;
         							var project = navigation.state.params.project;
 	        						var timesheet = {
-	        							yearMonth: navigation.state.params.year+"-"+month, 
+	        							yearMonth: navigation.state.params.year+"-"+textMonth, 
 	        							project: {name: project}, 
 	        							employee:{fullName: user}
 	        						};
 	        						alert(JSON.stringify(timesheet));
 	        						CreateTimesheet.sendCreateTimesheetRequest(JSON.stringify(timesheet));
-								    // var error = "";
-								    // //this.setState({ loaded: true, message: '' });
-								    // try {
-								    //   var result
-								    //   result = WLResourceRequestRN.asyncRequestWithURLBody(TIMESHEET_CREATE_REQUEST, WLResourceRequestRN.POST, JSON.stringify(timesheet));
-								    //   alert(JSON.stringify(response));
-								    // } catch (e) {
-								    //   error = e;
-								    //   alert("Failed to retrieve entry - " + error.message : "");
-								    // }
 								}
     						}
     					}
@@ -150,6 +141,37 @@ export default class CreateTimesheet extends Component {
 	      error = e;
 	      alert("Failed to retrieve entry - " + error.message);
 	    }
+    }
+
+    init(){
+    	// Создаётся объект promise
+		let promiseProfile = new Promise((resolve, reject) => {
+		      var result
+		      result = WLResourceRequestRN.asyncRequestWithURL(PROFILE_REQUEST, WLResourceRequestRN.GET);
+		      resolve(result);
+		});
+
+		let promiseProjects = new Promise((resolve, reject) => {
+			  var year = this.state.year;
+			  var month = this.getMonthByName(null);
+		      var result
+		      result = WLResourceRequestRN.asyncRequestWithURL(PROJECT_LIST_REQUEST+"?year="+year+"&month="+month, WLResourceRequestRN.GET);
+		      resolve(result);
+		});
+
+		// promise.then навешивает обработчики на успешный результат или ошибку
+		promiseProfile
+		  .then( response => {
+		      this.handleProfileResponse(JSON.parse(response));
+		      return promiseProjects;
+		  })
+		  .then( response => {
+		      this.handleProjectListResponse(JSON.parse(response));
+		  })
+		  .catch(error => {
+		    alert(error); // Error: Not Found
+		  });
+  		this.setState({isLoading : false});
     }
 
 
@@ -202,7 +224,8 @@ export default class CreateTimesheet extends Component {
     render() {
         return (
             <View style={styles.container}>
-            	<BlueActivityIndicator ref="indicator" animating={this.state.isLoading}/>
+            	{ this.state.isLoading && <BlueActivityIndicator ref="indicator" animating={this.state.isLoading}/> }
+            	{ !this.state.isLoading && <BlueActivityIndicator ref="indicator" animating={this.state.isLoading}/> }
             	<Label text="Username" />
             	<View 
 	            	style={styles.picker}
@@ -269,7 +292,7 @@ export default class CreateTimesheet extends Component {
   }
 
   componentDidMount() {
-    this.fetchData();
+    this.init();
   }
 
   navigateToLogin(){
@@ -286,8 +309,10 @@ export default class CreateTimesheet extends Component {
     var that = this;       
     this.challengeEventModuleSubscription  = DeviceEventEmitter.addListener(
       'LOGIN_REQURIED', function (challenge) {
-      	if(_DEBUG)
-          alert("Login REQURIED");
+      	Alert.alert(
+					'Login required',
+					'Log in, please.'
+				);
         that.navigateToLogin();
       }
     );
@@ -327,10 +352,11 @@ export default class CreateTimesheet extends Component {
   	this.fetchProjectList(y, null);
   }
 
-  fetchData() {
-  	this.setState({isLoading : true});
-  	//fetchProjectList(null, null);
-  	this.fetchProfileData();
+  getMonthByName(month){
+  	if(month === null)
+  		return (this.state.months.indexOf(this.state.month)+1);
+  	else
+  		return (this.state.months.indexOf(month)+1);
   }
 
   fetchProjectList(year, month) {
@@ -371,6 +397,7 @@ export default class CreateTimesheet extends Component {
       error = e;
       alert("Failed to retrieve entry - " + error.message : "");
     }
+    this.setState({isLoading: false});
   }
 
 
@@ -385,28 +412,29 @@ export default class CreateTimesheet extends Component {
       error = e;
       alert("Failed to retrieve entry - " + error.message : "");
     }
+    this.setState({isLoading: false});
   }
 
-  async postProjectAsPromise(timesheet) {
-  	timesheet = {yearMonth:"2017-06", project: {name: "MAD"}, employee:{fullName: "Светлаков Сергей Вадимович"}};
-    var error = "";
-    //this.setState({ loaded: true, message: '' });
-    try {
-      var result
-      result = await WLResourceRequestRN.asyncRequestWithURLBody(PROJECT_CREATE_REQUEST, WLResourceRequestRN.POST, timesheet);
-      this.handleResponse(JSON.parse(result));
-      alert(result);
-    } catch (e) {
-      error = e;
-      alert("Failed to retrieve entry - " + error.message : "");
-    }
-  }
+  // async postProjectAsPromise(timesheet) {
+  // 	timesheet = {yearMonth:"2017-06", project: {name: "MAD"}, employee:{fullName: "Светлаков Сергей Вадимович"}};
+  //   var error = "";
+  //   //this.setState({ loaded: true, message: '' });
+  //   try {
+  //     var result
+  //     result = await WLResourceRequestRN.asyncRequestWithURLBody(PROJECT_CREATE_REQUEST, WLResourceRequestRN.POST, timesheet);
+  //     this.handleResponse(JSON.parse(result));
+  //     alert(result);
+  //   } catch (e) {
+  //     error = e;
+  //     alert("Failed to retrieve entry - " + error.message : "");
+  //   }
+  // }
 
   handleProjectListResponse(response) {
  	//if(_DEBUG)
     //   alert(JSON.stringify(timesheetsList));
     response.unshift({name : DEFAULT_PROJECT});
-    this.setState({ message: '', projects : response, isLoading : false});       
+    this.setState({ message: '', projects : response});       
   }
 
   handleProfileResponse(response) {
@@ -415,13 +443,13 @@ export default class CreateTimesheet extends Component {
     //alert(JSON.stringify(response));
     var users = [];
     users.push(response);
-    this.setState({ message: '', users : users, user : response.fullName, isLoading : false});       
+    this.setState({ message: '', users : users, user : response.fullName});       
   }
 
   handleCreateTimesheetResponse(response) {
  	//if(_DEBUG)
  	// isn't array now
     alert(JSON.stringify(response));
-    this.setState({ message: '', users : users, user : response.fullName, isLoading : false});       
+    this.setState({ message: '', users : users, user : response.fullName});       
   }
 }

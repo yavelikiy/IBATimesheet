@@ -154,10 +154,10 @@ export default class Timesheets extends Component {
 	        super(props);
 	        const { params } = this.props.navigation.state;
 		    this.state = {
-		      dataSource: null,
+		        dataSource: [],
 	          loaded: false,
 	          message: '',
-	          refreshing: false,
+	          refreshing: true,
 	          loggedIn: typeof(params) != "undefined" && typeof(params.loggedIn) != "undefined" ? params.loggedIn : false,
 	          useDebug: typeof(params) != "undefined" && typeof(params.useDebug) != "undefined" ? params.useDebug : false,
 		    }
@@ -190,9 +190,9 @@ export default class Timesheets extends Component {
 
     
 	  render() {
-	  	if (!this.state.loaded) {
-	     return this.renderLoadingView();
-	    }
+	  	// if (!this.state.loaded) {
+	   //   return this.renderLoadingView();
+	   //  }
 	    return (
 	    	<View style={styles.outerContainer}>
 	    			<GridView

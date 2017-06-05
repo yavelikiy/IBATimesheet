@@ -22,6 +22,7 @@ import android.util.Log;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.ibatimesheet.RNJSONUtils;
 // MF 8.0
@@ -131,8 +132,11 @@ public class GenericSecurityCheckChallengeHandler extends SecurityCheckChallenge
                 }
 
                 @Override
-                public void onFailure(WLFailResponse wlFailResponse) {
-                    Log.d("IBATimesheet", "Login failure "+wlFailResponse.getErrorCode().getDescription()+": "+wlFailResponse.getErrorMsg());
+                public void onFailure(WLFailResponse wlFailResponse) { 
+                    WritableMap params = new WritableNativeMap();
+                    params.putString("errorMsg",wlFailResponse.getErrorMsg());
+                    Log.d("IBATimesheet", "Connection failure: "+wlFailResponse.getErrorCode().getDescription()+": "+wlFailResponse.getErrorMsg());
+                    sendEvent(reactApplicationContext, "CONNECTION_ERROR", params);
                 }
             });
         }
@@ -149,6 +153,8 @@ public class GenericSecurityCheckChallengeHandler extends SecurityCheckChallenge
 
             @Override
             public void onFailure(WLFailResponse wlFailResponse) {
+                WritableMap params = new WritableNativeMap();
+                params.putString("errorMsg",wlFailResponse.getErrorMsg());
                 reactApplicationContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
                 sendEvent(reactApplicationContext, "LOGOUT_FAILURE", null);
             }

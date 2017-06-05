@@ -48,9 +48,9 @@ export default class Calendar extends PureComponent {
     }
 
     handleDayPress(dateNumber, timeType) {
-        if (this.props.onDateSelect !== null) {
-            this.props.onDateSelect(dateNumber,timeType);
-        }
+        //if (this.props.onDateSelect !== null) {
+        //    this.props.onDateSelect(dateNumber,timeType);
+        //}
     }
 
     renderBar() {

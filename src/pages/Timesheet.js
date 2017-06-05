@@ -14,7 +14,9 @@ import {
 import Container from '../components/Container';
 import Calendar from '../components/Calendar';
 import Label from '../components/Label';
-import {RichTextEditor, RichTextToolbar} from 'react-native-zss-rich-text-editor';
+import RichTextEditor from '../components/RichTextEditor';
+import RichTextToolbar from '../components/RichTextToolbar';
+//import {RichTextEditor, RichTextToolbar} from 'react-native-zss-rich-text-editor';
 
 export default class Timesheet extends Component {
 	constructor(props) {
@@ -25,6 +27,7 @@ export default class Timesheet extends Component {
             	date: new Date(),
             	isCalendarFocused : true,
             	timesheet: this.props.navigation.state.params.timesheet,
+            	isEditable: false,
 	        };   
 			    this.getHTML = this.getHTML.bind(this);
 					this.setFocusHandlers = this.setFocusHandlers.bind(this);
@@ -42,36 +45,40 @@ export default class Timesheet extends Component {
   render() {
     if(this.state.isCalendarFocused){
   		return(
-  			<View style={styles.container}>
+  			<View style={[styles.container, {backgroundColor : '#AAABB8'}]}>
   				<Calendar
             date={this.state.date}
             timesheet={this.props.navigation.state.params.timesheet}
             onDateSelect={(date) => this.handleDateSelect(date)} />
+          <Label text="Comment" />
           <TextInput
               underlineColorAndroid="#29648A"    
-              editable={false}     
               onChange={(event) => this.setParams({ password: event.nativeEvent.text }) }
+              onFocus={() => this.setState({isCalendarFocused : false})}
               style={styles.textInput}
-              value={this.state.password}
-          />
-          <TextInput onFocus={() => this.setState({isCalendarFocused : false})} >
-          	{this.getPureComment()}
-          </TextInput>
+              value={this.getPureComment()} />
 				</View>
   			);
   	}
   	else{
+  		var tollbarActions = ['bold','italic','SET_TEXT_COLOR', 'SET_BACKGROUND_COLOR', 'h3', 'unorderedList'];
   		return(
   			<View style={styles.container}>
   				<RichTextEditor
           	ref={(r)=>this.richtext = r}
           	style={styles.richText}
           	initialContentHTML={this.props.navigation.state.params.timesheet.comment}
+          	initialTitleHTML="Comment"
+          	isContentEditable={this.state.isEditable}
+          	isTitleEditable={this.state.isEditable}
           	editorInitializedCallback={() => this.onEditorInitialized()}
 	      	/>
-	      	<RichTextToolbar
-	        	getEditor={() => this.richtext}
-		    	/>
+	      	{ this.state.isEditable && 
+	      		<RichTextToolbar
+		        	getEditor={() => this.richtext}
+		        	actions ={tollbarActions}
+			    	/>
+		    	}
 				</View>
   			);
   	}
@@ -118,7 +125,7 @@ const styles = StyleSheet.create({
 	},
 	textInput: {
 	  height: 80,
-	  fontSize: 30,
+	  fontSize: 20,
 	  backgroundColor: '#FFF'
 	},
 	buttonWhiteText: {

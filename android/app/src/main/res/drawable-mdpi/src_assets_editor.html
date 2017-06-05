@@ -763,7 +763,7 @@
 			zss_editor.init = function() {
 				disableLineBreakIfNecessary('zss_editor_title');
 				disableLineBreakIfNecessary('zss_editor_content');
-				//setupTouchEndEnableEditing('zss_editor_title');
+				setupTouchEndEnableEditing('zss_editor_title');
 				setupTouchEndEnableEditing('zss_editor_content');
 				clearHtmlIfTextIsEmpty('zss_editor_title');
 				clearHtmlIfTextIsEmpty('zss_editor_content');
@@ -789,13 +789,13 @@
 						zss_editor.updateOffset();
 					}
 				});
-				//setupTouchEndFocus('zss_editor_title');
+				setupTouchEndFocus('zss_editor_title');
 				setupTouchEndFocus('zss_editor_content');
 				setCurrentEditingLinkOnTouch();
 				preventLinkFollowingOnTouch();
-				//whenPastingInsertAsPlainText('zss_editor_title');
+				whenPastingInsertAsPlainText('zss_editor_title');
 				whenPastingInsertAsPlainText('zss_editor_content');
-				zss_editor.focusTitle();
+				zss_editor.focusContent();
 				setTimeout(function() {
 					WebViewBridge.send(JSON.stringify({type: 'ZSS_INITIALIZED'}))
 				}, 20);
@@ -1152,6 +1152,12 @@
 				var editor = $('#' + editorId);
 				editor.html(html);
 			}
+			zss_editor.setEditable= function(isTitleEditable, isContentEditable){
+				var title = $('#zss_editor_title');
+				var content = $('#zss_editor_content');
+				title.attr('contenteditable', isTitleEditable);
+				content.attr('contenteditable', isContentEditable);
+			}
 			zss_editor.setTitleHTML = function(html) {
 				setHTML('zss_editor_title', html);
 			}
@@ -1470,9 +1476,9 @@
 
 	<body>
 		<!-- ZSSRichTextEditor Editable Content -->
-		<div id="zss_editor_title" class="zss_editor_title" contenteditable="true" placeholder="" disableLineBreaks="true"></div>
+		<div id="zss_editor_title" class="zss_editor_title" contenteditable="false" placeholder="" disableLineBreaks="true"></div>
 		<div id="separatorContainer"><hr></div>
-		<div id="zss_editor_content" class="zss_editor_content" contenteditable="true" placeholder=""></div>
+		<div id="zss_editor_content" class="zss_editor_content" contenteditable="false" placeholder=""></div>
 		<div id="zss_editor_footer"></div>
 	</body>
 </html>

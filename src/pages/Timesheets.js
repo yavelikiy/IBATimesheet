@@ -153,16 +153,19 @@ export default class Timesheets extends Component {
 	constructor(props) {
 	        super(props);
 	        const { params } = this.props.navigation.state;
+        var isloggedIn = typeof(params) != "undefined" && typeof(params.loggedIn) != "undefined" ? params.loggedIn : false;
 		    this.state = {
 		        dataSource: [],
 	          loaded: false,
 	          message: '',
 	          refreshing: true,
-	          loggedIn: typeof(params) != "undefined" && typeof(params.loggedIn) != "undefined" ? params.loggedIn : false,
+	          loggedIn: isloggedIn,
 	          useDebug: typeof(params) != "undefined" && typeof(params.useDebug) != "undefined" ? params.useDebug : false,
 		    }
-        	this.registerChallengeHandler();
-        	//this.obtainAccessToken();
+      if(!isloggedIn){
+      	this.registerChallengeHandler();
+      	this.obtainAccessToken();
+      }
     }
 
     static navigationOptions = { 
@@ -226,9 +229,9 @@ export default class Timesheets extends Component {
   }
 
   componentDidMount() {
-    if(!this.state.loggedIn)
-    	this.navigateToLogin();
-    else
+    //if(!this.state.loggedIn)
+    //	this.navigateToLogin();
+    //else
     	this.fetchData();
   }
     
@@ -304,9 +307,7 @@ export default class Timesheets extends Component {
   addListeners() {
     var that = this;       
     this.challengeEventModuleSubscription  = DeviceEventEmitter.addListener(
-      'LOGIN_REQURIED', function (challenge) {
-      	if(_DEBUG)
-          alert("Login REQURIED");
+      'LOGIN_REQUIRED', function (challenge) {
         that.navigateToLogin();
       }
     );

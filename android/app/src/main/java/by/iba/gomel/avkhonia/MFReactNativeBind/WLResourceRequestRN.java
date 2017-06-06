@@ -91,8 +91,12 @@ public class WLResourceRequestRN extends ReactContextBaseJavaModule {
             WLResourceRequest request = new WLResourceRequest(URI.create(url),method, DEFAULT_TIMEOUT);
             request.send(new WLResponseListener(){
                 public void onSuccess(WLResponse response) {
-                    promise.resolve(response.getResponseText());
-                    Log.d("Success", response.getResponseText());
+                    try{
+                        promise.resolve(response.getResponseText());
+                        Log.d("Success", response.getResponseText());
+                    }catch(Exception e){
+                        Log.d("IBATimesheet", "ERROR PROMISE RESOLVE: "+e);                        
+                    }
                 }
                 public void onFailure(WLFailResponse response) {
                     promise.reject(response.getErrorStatusCode(), response.getErrorMsg());

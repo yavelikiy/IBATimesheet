@@ -1,4 +1,4 @@
-import React, { PureComponent } from "react";
+import React, { Component } from "react";
 
 import {
     StyleSheet,
@@ -9,14 +9,12 @@ import {
 } from "react-native";
 
 
-export default class Calendar extends PureComponent {
+export default class Calendar extends Component {
 
     static get defaultProps() {
         return {
             date: new Date(),
             onDateSelect: null,
-            onPrevButtonPress: null,
-            onNextButtonPress: null,
             weekFirstDay: 0,
             dayNames: [
                 "Mon", "Tue", "Wed", "Thu", "Fri", "Sat","Sun", 
@@ -38,8 +36,6 @@ export default class Calendar extends PureComponent {
         return {
             date: React.PropTypes.object,
             onDateSelect: React.PropTypes.func,
-            onPrevButtonPress: React.PropTypes.func,
-            onNextButtonPress: React.PropTypes.func,
             dayNames: React.PropTypes.array,
             monthNames: React.PropTypes.array,
             weekFirstDay: React.PropTypes.number,

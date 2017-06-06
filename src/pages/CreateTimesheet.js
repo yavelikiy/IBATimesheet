@@ -144,6 +144,7 @@ export default class CreateTimesheet extends Component {
     }
 
     init(){
+  		this.setState({isLoading : true});
     	// Создаётся объект promise
 		let promiseProfile = new Promise((resolve, reject) => {
 		      var result

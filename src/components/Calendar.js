@@ -14,7 +14,7 @@ export default class Calendar extends Component {
     static get defaultProps() {
         return {
             date: new Date(),
-            onDateSelect: null,
+            //onDateSelect: null,
             weekFirstDay: 0,
             dayNames: [
                 "Mon", "Tue", "Wed", "Thu", "Fri", "Sat","Sun", 
@@ -35,11 +35,13 @@ export default class Calendar extends Component {
     static get propTypes() {
         return {
             date: React.PropTypes.object,
-            onDateSelect: React.PropTypes.func,
             dayNames: React.PropTypes.array,
             monthNames: React.PropTypes.array,
             weekFirstDay: React.PropTypes.number,
             timesheet: React.PropTypes.object,
+            workdayDefault: React.PropTypes.string,
+            weekendDefault: React.PropTypes.string,
+            holydayDefault: React.PropTypes.string,
         };
     }
 
@@ -56,18 +58,9 @@ export default class Calendar extends Component {
 
         return (
             <View style={styles.bar}>
-
-                <View style={styles.barMonth}>
-                    <Text style={styles.barText}>
-                        {monthName + " "}
-                    </Text>
-                </View>
-
-                <View style={styles.barYear}>
-                    <Text style={styles.barText}>
-                        {year}
-                    </Text>
-                </View>
+                <Text style={styles.barText}>
+                    {monthName + " "+year}
+                </Text>
             </View>
         );
     }
@@ -113,7 +106,7 @@ export default class Calendar extends Component {
                 <TouchableOpacity onPress={() => this.handleDayPress(dateNumber, timeType)}>
                     <View style={[styles.dayInner, isToday ? styles.todayDayInner : {}]}>
                         <Text style={[styles.dayText, isWeekend ? styles.dayWeekendText : {}]}>
-                            {dateNumber}
+                            {String(dateNumber)}
                         </Text>
                         <Text style={[styles.dayValueText, isWeekend ? styles.dayWeekendText : {}]}>
                             {timeType}
@@ -194,10 +187,11 @@ const timeTypes = ["8", "7", "П", "В", "ОТ"];
 
 const styles = StyleSheet.create({
     calendar: {
-        borderBottomWidth: 1,
+        borderBottomWidth: 3,
         borderStyle: "solid",
         borderBottomColor: "#BDBDBD",
         backgroundColor: "white",
+        borderRadius: 4,
     },
 
     week: {
@@ -243,17 +237,13 @@ const styles = StyleSheet.create({
     bar: {
         backgroundColor: "white",
         flexDirection: "row",
-        justifyContent: "space-between",
+        justifyContent: "center",
         alignItems: "center",
+        borderRadius: 4,
     },
 
     barText: {
         color: "#424242",
-    },
-
-    barButton: {
-        backgroundColor: "white",
-        padding: 10,
     },
 
     schadedText: {

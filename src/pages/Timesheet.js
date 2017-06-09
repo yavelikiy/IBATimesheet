@@ -111,11 +111,6 @@ export default class Timesheet extends Component {
 const timeTypes = ["8", "7", "П", "В", "ОТ"];
 
 const styles = StyleSheet.create({
-	 scroll: {
-    backgroundColor: '#E1D7D8',
-    padding: 30,
-    flexDirection: 'column'
-	},
 	label: {
     color: '#0d8898',
     fontSize: 20
@@ -124,9 +119,10 @@ const styles = StyleSheet.create({
 	  alignSelf: 'flex-end'
 	},
 	textInput: {
-	  height: 80,
-	  fontSize: 20,
-	  backgroundColor: '#FFF'
+	  height: 60,
+	  fontSize: 18,
+	  backgroundColor: '#FFF',
+    borderRadius: 4,
 	},
 	buttonWhiteText: {
 	   fontSize: 20,
@@ -147,6 +143,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     backgroundColor: '#ffffff',
-    paddingTop: 5
+    padding: 5
 	},
 });

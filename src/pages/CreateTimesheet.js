@@ -68,34 +68,34 @@ const styles = StyleSheet.create({
 export default class CreateTimesheet extends Component {
 	constructor(props) {
         super(props);
-        const { params } = this.props.navigation.state;
-		const {setParams} = this.props.navigation;
+    //     const { params } = this.props.navigation.state;
+				// const {setParams} = this.props.navigation;
 
-        // this.setState({
-        // 	user : params.user,
-        // 	users : params.users,
-        // 	projects : params.projects,
-        // 	project : null,
-        // 	date : new Date()
-        // });
+    //     // this.setState({
+    //     // 	user : params.user,
+    //     // 	users : params.users,
+    //     // 	projects : params.projects,
+    //     // 	project : null,
+    //     // 	date : new Date()
+    //     // });
 
-        var curDate = new Date();
-        var m = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        this.state = {
-        	user : DEFAULT_PROJECT,
-        	users : [{ fullName : DEFAULT_PROJECT}],
-        	projects : [{name: DEFAULT_PROJECT}],
-        	months : m,
-        	project : DEFAULT_PROJECT,
-        	date : new Date(),
-        	month : m[curDate.getMonth()],
-        	year : curDate.getFullYear(),
-        	message: 'error here',
-	        useDebug: typeof(params) != "undefined" && typeof(params.useDebug) != "undefined" ? params.useDebug : false,
-	        isLoading : true,
-        };
+    //     var curDate = new Date();
+    //     var m = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    //     this.state = {
+    //     	user : DEFAULT_PROJECT,
+    //     	users : [{ fullName : DEFAULT_PROJECT}],
+    //     	projects : [{name: DEFAULT_PROJECT}],
+    //     	months : m,
+    //     	project : DEFAULT_PROJECT,
+    //     	date : new Date(),
+    //     	month : m[curDate.getMonth()],
+    //     	year : curDate.getFullYear(),
+    //     	message: 'error here',
+	   //      useDebug: typeof(params) != "undefined" && typeof(params.useDebug) != "undefined" ? params.useDebug : false,
+	   //      isLoading : true,
+    //     };
 
-        setParams({project:null, month: m[curDate.getMonth()], year:curDate.getFullYear(), months: m});
+    //     setParams({project:null, month: m[curDate.getMonth()], year:curDate.getFullYear(), months: m});
     }
 
 	static navigationOptions = ({ navigation }) => ({ 
@@ -144,7 +144,6 @@ export default class CreateTimesheet extends Component {
     }
 
     init(){
-  		this.setState({isLoading : true});
     	// Создаётся объект promise
 		let promiseProfile = new Promise((resolve, reject) => {
 		      var result
@@ -168,11 +167,11 @@ export default class CreateTimesheet extends Component {
 		  })
 		  .then( response => {
 		      this.handleProjectListResponse(JSON.parse(response));
+  				this.setState({isLoading : false});
 		  })
 		  .catch(error => {
 		    alert(error); // Error: Not Found
 		  });
-  		this.setState({isLoading : false});
     }
 
 
@@ -285,6 +284,33 @@ export default class CreateTimesheet extends Component {
     }
 
   componentWillMount(){
+  			const { params } = this.props.navigation.state;
+				const {setParams} = this.props.navigation;
+
+        // this.setState({
+        // 	user : params.user,
+        // 	users : params.users,
+        // 	projects : params.projects,
+        // 	project : null,
+        // 	date : new Date()
+        // });
+
+        var curDate = new Date();
+        var m = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        this.state = {
+        	user : DEFAULT_PROJECT,
+        	users : [{ fullName : DEFAULT_PROJECT}],
+        	projects : [{name: DEFAULT_PROJECT}],
+        	months : m,
+        	project : DEFAULT_PROJECT,
+        	date : new Date(),
+        	month : m[curDate.getMonth()],
+        	year : curDate.getFullYear(),
+        	message: 'error here',
+	        useDebug: typeof(params) != "undefined" && typeof(params.useDebug) != "undefined" ? params.useDebug : false,
+	        isLoading : true,
+        };
+        setParams({project:null, month: m[curDate.getMonth()], year:curDate.getFullYear(), months: m});
     this.addListeners();
   }
 

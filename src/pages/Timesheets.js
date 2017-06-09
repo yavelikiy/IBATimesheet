@@ -49,10 +49,17 @@ const styles = StyleSheet.create({
 	    fontSize: 16,
 	    color: '#FFF',
 	},
-	listView: {
-	  paddingTop: 20,
-	  backgroundColor: '#AAABB8'
-	},
+  listView: {
+    paddingTop: 20,
+    backgroundColor: '#AAABB8'
+  },
+  emptyList: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#AAABB8'
+  },
 	circle: {	    
 	    justifyContent: 'center',
 	    alignItems: 'center',
@@ -198,13 +205,20 @@ export default class Timesheets extends Component {
 	   //  }
 	    return (
 	    	<View style={styles.outerContainer}>
-	    			<GridView
-			        items={this.state.dataSource}
-			        itemsPerRow={TIMESHEETS_PER_ROW}
-			        renderItem={(item) => this.renderItem(item)}
-			        style={styles.listView}
-			        refreshControl={ <RefreshControl refreshing={this.state.refreshing} onRefresh={() => this._onRefresh()} />}
-			      />
+	    			{ (this.state.dataSource.length > 0 || this.state.refreshing) && 
+              <GridView
+  			        items={this.state.dataSource}
+  			        itemsPerRow={TIMESHEETS_PER_ROW}
+  			        renderItem={(item) => this.renderItem(item)}
+  			        style={styles.listView}
+  			        refreshControl={ <RefreshControl refreshing={this.state.refreshing} onRefresh={() => this._onRefresh()} />}
+  			      />
+            }
+            { this.state.dataSource.length == 0 && !this.state.refreshing  && 
+              <View style={styles.emptyList}>
+                <Text>You don't have timesheets.</Text>
+              </View>
+            }
 			      <View style={styles.circleContainer}>
 			      	<TouchableHighlight style={styles.circle} onPress={() => this.pressCreate()}>
 			            <Text style={styles.circleText}>+</Text>

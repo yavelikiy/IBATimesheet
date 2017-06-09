@@ -21,6 +21,7 @@ import { StackNavigator } from 'react-navigation';
 import Login from './src/pages/Login';
 import Timesheets from './src/pages/Timesheets';
 import Timesheet from './src/pages/Timesheet';
+import TimesheetComment from './src/pages/TimesheetComment';
 import TimesheetTimeValuePicker from './src/pages/TimesheetTimeValuePicker';
 import CreateTimesheet from './src/pages/CreateTimesheet';
 
@@ -60,6 +61,13 @@ const IBATimesheet = StackNavigator({
     Timesheet: { screen: Timesheet, 
       navigationOptions : ({ navigation }) => ({ 
           title: `${navigation.state.params.timesheetTitle}`,
+          headerStyle: { backgroundColor: '#0066B3' },
+          headerTitleStyle: { color: '#FFF' },
+      })
+    },
+    TimesheetComment: { screen: TimesheetComment, 
+      navigationOptions : ({ navigation }) => ({ 
+          title: 'Comment',
           headerStyle: { backgroundColor: '#0066B3' },
           headerTitleStyle: { color: '#FFF' },
       })

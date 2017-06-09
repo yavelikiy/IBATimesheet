@@ -106,9 +106,9 @@ export default class Login extends Component {
 
   chooseIndicator(){
     if(this.state.isLoading)
-      return <BlueActivityIndicator ref="indicator" animating={this.state.isLoading}/>;
+      return <BlueActivityIndicator ref="indicator" animating={true}/>;
     else
-      return <BlueActivityIndicator ref="indicator" animating={this.state.isLoading}/>
+      return <BlueActivityIndicator ref="indicator" animating={false}/>
   }
 
   render() {

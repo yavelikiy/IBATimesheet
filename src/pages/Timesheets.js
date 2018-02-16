@@ -25,8 +25,6 @@ import { DeckSwiper, Card, CardItem, Thumbnail, Left, Body, Icon, View, Containe
 import TimesheetButtonOthers from '../components/TimesheetButtonOthers';
 import BlueActivityIndicator from '../components/BlueActivityIndicator';
 
-import GridView from 'react-native-grid-view';
-//import autobind from 'autobind-decorator';
 import { NavigationActions } from 'react-navigation'
 
 import WLClientRN from '../wrappers/WLClientRN'
@@ -454,5 +452,5 @@ export default class Timesheets extends Component {
     this.logoutEventModuleSubscription.remove();
   }    
 }
-const challengeEventModule = new NativeEventEmitter(NativeModules.SecurityCheckChallengeHandlerEventEmitter);
+const challengeEventModule = new NativeEventEmitter(NativeModules.SecurityCheckChallengeHandlerRN);
 

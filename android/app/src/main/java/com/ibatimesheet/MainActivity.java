@@ -1,6 +1,8 @@
 package com.ibatimesheet;
 
 import com.facebook.react.ReactActivity;
+import com.github.alinz.reactnativewebviewbridge.WebViewBridgePackage;
+import com.oblador.vectoricons.VectorIconsPackage;
 
 public class MainActivity extends ReactActivity {
 

@@ -25,7 +25,7 @@ import RichTextEditor from '../components/RichTextEditor';
 import RichTextToolbar from '../components/RichTextToolbar';
 import BlueActivityIndicator from '../components/BlueActivityIndicator';
 import WLResourceRequestRN from '../wrappers/WLResourceRequestRN'
-import GridView from 'react-native-grid-view';
+//import GridView from 'react-native-grid-view';
 import GlobalStyle from '../styles/GlobalStyle'
 
 import Swiper from 'react-native-swiper';
@@ -266,7 +266,7 @@ export default class Timesheet extends Component {
                   {this.getAllTypes()}
                   </ScrollView>
                 }
-                {this.state.useGrid &&
+                {/* {this.state.useGrid &&
                   <GridView
                     items={this.state.timeTypes}
                     enableEmptySections={true}
@@ -288,7 +288,7 @@ export default class Timesheet extends Component {
                     }
                     style={styles.modalInner}
                   />
-                }
+                } */}
                 </TouchableOpacity>
               </Modal>
               <Modal 

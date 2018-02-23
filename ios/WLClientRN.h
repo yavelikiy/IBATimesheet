@@ -10,8 +10,10 @@
 #define WLClientRN_h
 
 #import <React/RCTBridgeModule.h>
+#import <IBMMobileFirstPlatformFoundation/IBMMobileFirstPlatformFoundation.h>
 
-@interface WLClientRN : NSObject <RCTBridgeModule>
+@interface WLClientRN : NSObject<RCTBridgeModule>
+-(void)registerChallengeHandler:(NSString *)securityCheck;
 @end
 
 #endif /* WLClientRN_h */

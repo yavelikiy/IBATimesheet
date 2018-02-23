@@ -73,6 +73,7 @@
 		CD034BB420371A1A002368EA /* Roboto-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CD034BA220371A19002368EA /* Roboto-Regular.ttf */; };
 		CD034BB520371A1A002368EA /* RobotoCondensed-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CD034BA320371A19002368EA /* RobotoCondensed-Regular.ttf */; };
 		CD2E31872034725B00900FBE /* libReact-Native-Webview-Bridge.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD2E31852034724F00900FBE /* libReact-Native-Webview-Bridge.a */; };
+		CDF56F4D204033E300DA9388 /* SecurityCheckChallengeHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF56F4C204033E300DA9388 /* SecurityCheckChallengeHandler.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -406,6 +407,8 @@
 		CD034BA220371A19002368EA /* Roboto-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Roboto-Regular.ttf"; path = "roboto/Roboto-Regular.ttf"; sourceTree = SOURCE_ROOT; };
 		CD034BA320371A19002368EA /* RobotoCondensed-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "RobotoCondensed-Regular.ttf"; path = "roboto/RobotoCondensed-Regular.ttf"; sourceTree = SOURCE_ROOT; };
 		CD2E31802034724F00900FBE /* React-Native-Webview-Bridge.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-Native-Webview-Bridge.xcodeproj"; path = "../node_modules/react-native-webview-bridge-updated/ios/React-Native-Webview-Bridge.xcodeproj"; sourceTree = "<group>"; };
+		CDF56F27204033A200DA9388 /* SecurityCheckChallengeHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SecurityCheckChallengeHandler.h; path = IBATimesheet/SecurityCheckChallengeHandler.h; sourceTree = "<group>"; };
+		CDF56F4C204033E300DA9388 /* SecurityCheckChallengeHandler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = SecurityCheckChallengeHandler.m; path = IBATimesheet/SecurityCheckChallengeHandler.m; sourceTree = "<group>"; };
 		CF1812C5A9D495A3D93E150C /* Pods_IBATimesheet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_IBATimesheet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2AEB10F7AC193B659E6C0D0 /* Pods-IBATimesheet.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-IBATimesheet.release.xcconfig"; path = "Pods/Target Support Files/Pods-IBATimesheet/Pods-IBATimesheet.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -552,6 +555,8 @@
 				CD034B4520370945002368EA /* WLClientRN.m */,
 				CD034B412037060B002368EA /* SecurityCheckChallengeHandlerRN.h */,
 				CD034B4220370696002368EA /* SecurityCheckChallengeHandlerRN.m */,
+				CDF56F27204033A200DA9388 /* SecurityCheckChallengeHandler.h */,
+				CDF56F4C204033E300DA9388 /* SecurityCheckChallengeHandler.m */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -1324,6 +1329,7 @@
 				CD034B4620370945002368EA /* WLClientRN.m in Sources */,
 				CD034B4320370696002368EA /* SecurityCheckChallengeHandlerRN.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
+				CDF56F4D204033E300DA9388 /* SecurityCheckChallengeHandler.m in Sources */,
 				CD034B3F203705C3002368EA /* WLResourceRequestRN.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);

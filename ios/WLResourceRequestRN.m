@@ -60,4 +60,21 @@ RCT_EXPORT_METHOD(asyncRequestWithURL:(NSString *)urlString method:(NSString *)m
 //  }];
 }
 
+
+RCT_EXPORT_METHOD(asyncRequestWithURLBody:(NSString *)urlString params:(NSString *)params method:(NSString *)method resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+{
+  //  NSURL *url = [NSURL URLWithString:urlString];
+  //  WLResourceRequest* resourceRequest = [WLResourceRequest requestWithURL:url method:WLHttpMethodGet];
+  //  [resourceRequest sendWithCompletionHandler:^(WLResponse *response, NSError *error) {
+  //    NSString* resultText;
+  //    if(error != nil){
+  //      resultText = @"Invocation failure.";
+  //      reject(@"Invocation failure.", resultText, error);
+  //    }
+  //    else{
+  //      resolve(response.responseText);
+  //    }
+  //  }];
+}
+
 @end

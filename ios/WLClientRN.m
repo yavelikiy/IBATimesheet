@@ -8,14 +8,20 @@
 
 #import "WLClientRN.h"
 #import <React/RCTLog.h>
+#import "SecurityCheckChallengeHandlerRN.h"
 
 @implementation WLClientRN
 
 RCT_EXPORT_MODULE();
 
-RCT_EXPORT_METHOD(registerChallengeHandler)
+RCT_EXPORT_METHOD(registerChallengeHandler:(NSString *)securityCheck)
 {
-  RCTLogInfo(@"Pretending to register ChallengeHandler");
+  BaseChallengeHandler *existingChallenge = [[WLClient sharedInstance] getChallengeHandlerBySecurityCheck:securityCheck];
+  
+  if (existingChallenge == nil) {
+    SecurityCheckChallengeHandlerRN *challenge = [[SecurityCheckChallengeHandlerRN alloc] initWithSecurityCheck:securityCheck];
+    [[WLClient sharedInstance] registerChallengeHandler:challenge];
+  }
 }
 
 @end

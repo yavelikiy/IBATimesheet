@@ -9,9 +9,11 @@
 #ifndef SecurityCheckChallengeHandlerRN_h
 #define SecurityCheckChallengeHandlerRN_h
 
-#import <React/RCTBridgeModule.h>
+#import <IBMMobileFirstPlatformFoundation/IBMMobileFirstPlatformFoundation.h>
+#import "React/RCTBridge.h"
+#import "React/RCTEventEmitter.h"
 
-@interface SecurityCheckChallengeHandlerRN : NSObject <RCTBridgeModule>
+@interface SecurityCheckChallengeHandlerRN : SecurityCheckChallengeHandler <RCTBridgeModule>
 @end
 
 #endif /* SecurityCheckChallengeHandlerRN_h */

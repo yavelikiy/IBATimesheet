@@ -12,14 +12,16 @@
 
 @implementation WLClientRN
 
+static NSString *const securityCheck = @"dominoSecurityCheck";
+
 RCT_EXPORT_MODULE();
 
-RCT_EXPORT_METHOD(registerChallengeHandler:(NSString *)securityCheck)
+RCT_EXPORT_METHOD(registerChallengeHandler)
 {
   BaseChallengeHandler *existingChallenge = [[WLClient sharedInstance] getChallengeHandlerBySecurityCheck:securityCheck];
   
   if (existingChallenge == nil) {
-    SecurityCheckChallengeHandlerRN *challenge = [[SecurityCheckChallengeHandlerRN alloc] initWithSecurityCheck:securityCheck];
+    SecurityCheckChallengeHandlerRN *challenge = [[SecurityCheckChallengeHandlerRN alloc] initWithSecurityCheck:securityCheck ];
     [[WLClient sharedInstance] registerChallengeHandler:challenge];
   }
 }

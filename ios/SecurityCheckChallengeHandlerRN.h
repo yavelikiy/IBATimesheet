@@ -12,6 +12,8 @@
 #import <IBMMobileFirstPlatformFoundation/IBMMobileFirstPlatformFoundation.h>
 #import "React/RCTBridge.h"
 #import "React/RCTEventEmitter.h"
+#import <React/RCTLog.h>
+#import "SecurityCheckChallengeHandlerEventEmitter.h"
 
 @interface SecurityCheckChallengeHandlerRN : SecurityCheckChallengeHandler <RCTBridgeModule>
 @end

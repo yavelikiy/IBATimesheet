@@ -1,14 +1,17 @@
 //
-//  SecurityCheckChallengeHandler.m
+//  SecurityCheckChallengeHandlerEventEmitter.m
 //  IBATimesheet
 //
-//  Created by NG on 2/23/18.
+//  Created by NG on 3/21/18.
 //  Copyright © 2018 Facebook. All rights reserved.
 //
 
-#import "SecurityCheckChallengeHandler.h"
+#import "SecurityCheckChallengeHandlerEventEmitter.h"
 
-@implementation SecurityCheckChallengeHandler
+
+
+
+@implementation SecurityCheckChallengeHandlerEventEmitter
 RCT_EXPORT_MODULE();
 
 - (instancetype)init
@@ -21,12 +24,11 @@ RCT_EXPORT_MODULE();
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-  return @[@"handleChallenge"];
+  return @[@"handleChallenge",@""];
 }
 
--(void) sendHandleChallenge:(NSNotification*)notification{
-  [self sendEventWithName:@"handleChallenge" body:notification.object];
+-(void) sendEvent:(NSString *)name params:(NSDictionary *)params{
+  [self sendEventWithName:name body:params];
 }
 
 @end
-

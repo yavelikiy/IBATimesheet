@@ -271,51 +271,60 @@ export default class Login extends Component {
           // </Container>
 
   addListeners() {
-        var that = this;       
-        //need to login
-        this.challengeEventModuleSubscription  = DeviceEventEmitter.addListener(
-            'LOGIN_REQUIRED', function (e) {
-              that.setState({error : 'Username and/or password are incorrect.', password:'', isLoading: false});
-              Alert.alert(
-                'Login required',
-                'Username and/or password are incorrect.'
-              );
-            }
-        );
-        //login faild. Show message
-        this.failureEventModuleSubscription  = DeviceEventEmitter.addListener(
-            'LOGIN_FAILED', function (e) {
-              that.setState({error : 'Login failed. '+e.errorMsg, password:'', isLoading: false});
-              Alert.alert(
-                'Login failed',
-                e.errorMsg
-              );
-            }
-        );
-        //login faild. Show message
-        this.connectionEventModuleSubscription  = DeviceEventEmitter.addListener(
-            'CONNECTION_ERROR', function (e) {
-              that.setState({error : 'Login failed. '+e.errorMsg, password:'', isLoading: false});
-              Alert.alert(
-                'Error',
-                e.errorMsg
-              );
-            }
-        );
-        //Login succes. Redirect to Timesheets page. 
-        this.successEventModuleSubscription  = DeviceEventEmitter.addListener(
-            'LOGIN_SUCCESS', function (e) {
-                    const resetAction = NavigationActions.reset({
-                      index: 0,
-                      actions: [
-                        NavigationActions.navigate({ 
-                          routeName: 'Timesheets',
-                          params: {loggedIn:true, useDebug:that.state.useDebug}})
-                      ]
-                    });
-                    that.props.navigation.dispatch(resetAction);
-            }
-        );
+    var that = this; 
+    var emitter;   
+    const {SecurityCheckChallengeHandlerEventEmitter} = NativeModules;
+    emitter = new NativeEventEmitter(NativeModules.SecurityCheckChallengeHandlerEventEmitter);
+    // if( Platform.OS == 'iOS'){
+    //   emitter = NativeEventEmitter;
+
+    // }else{
+    //   emitter = DeviceEventEmitter;   
+    // }
+    //need to login
+    this.challengeEventModuleSubscription  = emitter.addListener(
+        'LOGIN_REQUIRED', function (e) {
+          that.setState({error : 'Username and/or password are incorrect.', password:'', isLoading: false});
+          Alert.alert(
+            'Login required',
+            'Username and/or password are incorrect.'
+          );
+        }
+    );
+    //login faild. Show message
+    this.failureEventModuleSubscription  = emitter.addListener(
+        'LOGIN_FAILED', function (e) {
+          that.setState({error : 'Login failed. '+e.errorMsg, password:'', isLoading: false});
+          Alert.alert(
+            'Login failed',
+            e.errorMsg
+          );
+        }
+    );
+    //login faild. Show message
+    this.connectionEventModuleSubscription  = emitter.addListener(
+        'CONNECTION_ERROR', function (e) {
+          that.setState({error : 'Login failed. '+e.errorMsg, password:'', isLoading: false});
+          Alert.alert(
+            'Error',
+            e.errorMsg
+          );
+        }
+    );
+    //Login succes. Redirect to Timesheets page. 
+    this.successEventModuleSubscription  = emitter.addListener(
+        'LOGIN_SUCCESS', function (e) {
+                const resetAction = NavigationActions.reset({
+                  index: 0,
+                  actions: [
+                    NavigationActions.navigate({ 
+                      routeName: 'Timesheets',
+                      params: {loggedIn:true, useDebug:that.state.useDebug}})
+                  ]
+                });
+                that.props.navigation.dispatch(resetAction);
+        }
+    );
   }
 
   removeListeners(){

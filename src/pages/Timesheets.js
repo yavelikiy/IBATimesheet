@@ -431,14 +431,28 @@ export default class Timesheets extends Component {
   }
 
   addListeners() {
-    var that = this;       
-    this.challengeEventModuleSubscription  = DeviceEventEmitter.addListener(
+    var that = this;  
+    var emitter;
+    const {SecurityCheckChallengeHandlerEventEmitter} = NativeModules;
+    emitter = new NativeEventEmitter(NativeModules.SecurityCheckChallengeHandlerEventEmitter);
+    // if(Platform.OS == 'iOS'){
+    // }else{
+    //   emitter = DeviceEventEmitter;
+    // }     
+    this.challengeEventModuleSubscription  = emitter.addListener(
       'LOGIN_REQUIRED', function (challenge) {
         that.props.navigation.dispatch({type:'Navigation/RESET', actions:[{type:'Navigation/NAVIGATE', routeName:'Login'}], index:0});
       }
     );
-    this.logoutEventModuleSubscription  = DeviceEventEmitter.addListener(
+    this.logoutEventModuleSubscription  = emitter.addListener(
       'LOGOUT_SUCCESS', function (challenge) {
+      	//if(_DEBUG)
+        //  alert("Logout Success");
+        that.props.navigation.dispatch({type:'Navigation/RESET', actions:[{type:'Navigation/NAVIGATE', routeName:'Login'}], index:0});
+      }
+    );
+    this.logoutFailEventModuleSubscription  = emitter.addListener(
+      'LOGOUT_FAILURE', function (challenge) {
       	//if(_DEBUG)
         //  alert("Logout Success");
         that.props.navigation.dispatch({type:'Navigation/RESET', actions:[{type:'Navigation/NAVIGATE', routeName:'Login'}], index:0});
@@ -450,6 +464,7 @@ export default class Timesheets extends Component {
   removeListeners(){
     this.challengeEventModuleSubscription.remove();
     this.logoutEventModuleSubscription.remove();
+    this.logoutFailEventModuleSubscription.remove();
   }    
 }
 const challengeEventModule = new NativeEventEmitter(NativeModules.SecurityCheckChallengeHandlerRN);

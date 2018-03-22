@@ -36,7 +36,6 @@
 		2DCD954D1E0B4F2C00145EB5 /* IBATimesheetTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* IBATimesheetTests.m */; };
 		5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
-		90632549E120685E1623C53B /* Pods_IBATimesheet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF1812C5A9D495A3D93E150C /* Pods_IBATimesheet.framework */; };
 		CD034B3F203705C3002368EA /* WLResourceRequestRN.m in Sources */ = {isa = PBXBuildFile; fileRef = CD034B38203705C3002368EA /* WLResourceRequestRN.m */; };
 		CD034B4320370696002368EA /* SecurityCheckChallengeHandlerRN.m in Sources */ = {isa = PBXBuildFile; fileRef = CD034B4220370696002368EA /* SecurityCheckChallengeHandlerRN.m */; };
 		CD034B4620370945002368EA /* WLClientRN.m in Sources */ = {isa = PBXBuildFile; fileRef = CD034B4520370945002368EA /* WLClientRN.m */; };
@@ -74,6 +73,7 @@
 		CD034BB520371A1A002368EA /* RobotoCondensed-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CD034BA320371A19002368EA /* RobotoCondensed-Regular.ttf */; };
 		CD2E31872034725B00900FBE /* libReact-Native-Webview-Bridge.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CD2E31852034724F00900FBE /* libReact-Native-Webview-Bridge.a */; };
 		CDD3E9F22062487E004C3FD8 /* SecurityCheckChallengeHandlerEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD3E9F12062487E004C3FD8 /* SecurityCheckChallengeHandlerEventEmitter.m */; };
+		CDD3E9F420627741004C3FD8 /* mfpclient.plist in Resources */ = {isa = PBXBuildFile; fileRef = CDD3E9F320627741004C3FD8 /* mfpclient.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -409,6 +409,7 @@
 		CD2E31802034724F00900FBE /* React-Native-Webview-Bridge.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "React-Native-Webview-Bridge.xcodeproj"; path = "../node_modules/react-native-webview-bridge-updated/ios/React-Native-Webview-Bridge.xcodeproj"; sourceTree = "<group>"; };
 		CDD3E9EF206247A4004C3FD8 /* SecurityCheckChallengeHandlerEventEmitter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SecurityCheckChallengeHandlerEventEmitter.h; sourceTree = "<group>"; };
 		CDD3E9F12062487E004C3FD8 /* SecurityCheckChallengeHandlerEventEmitter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SecurityCheckChallengeHandlerEventEmitter.m; sourceTree = "<group>"; };
+		CDD3E9F320627741004C3FD8 /* mfpclient.plist */ = {isa = PBXFileReference; explicitFileType = text.plist.info; path = mfpclient.plist; sourceTree = "<group>"; };
 		CF1812C5A9D495A3D93E150C /* Pods_IBATimesheet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_IBATimesheet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2AEB10F7AC193B659E6C0D0 /* Pods-IBATimesheet.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-IBATimesheet.release.xcconfig"; path = "Pods/Target Support Files/Pods-IBATimesheet/Pods-IBATimesheet.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -438,7 +439,6 @@
 				832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */,
 				00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */,
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
-				90632549E120685E1623C53B /* Pods_IBATimesheet.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -564,6 +564,7 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				CDD3E9F320627741004C3FD8 /* mfpclient.plist */,
 			);
 			name = IBATimesheet;
 			sourceTree = "<group>";
@@ -1188,6 +1189,7 @@
 				CD034B8B2037192B002368EA /* Foundation.ttf in Resources */,
 				CD034BB320371A1A002368EA /* RobotoCondensed-LightItalic.ttf in Resources */,
 				CD034BA520371A19002368EA /* Roboto-BoldItalic.ttf in Resources */,
+				CDD3E9F420627741004C3FD8 /* mfpclient.plist in Resources */,
 				CD034B8E2037192B002368EA /* Zocial.ttf in Resources */,
 				CD034BAE20371A1A002368EA /* Roboto-Thin.ttf in Resources */,
 				CD034BB420371A1A002368EA /* Roboto-Regular.ttf in Resources */,

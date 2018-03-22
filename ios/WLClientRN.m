@@ -21,7 +21,7 @@ RCT_EXPORT_METHOD(registerChallengeHandler)
   BaseChallengeHandler *existingChallenge = [[WLClient sharedInstance] getChallengeHandlerBySecurityCheck:securityCheck];
   
   if (existingChallenge == nil) {
-    SecurityCheckChallengeHandlerRN *challenge = [[SecurityCheckChallengeHandlerRN alloc] initWithSecurityCheck:securityCheck ];
+    SecurityCheckChallengeHandlerRN *challenge = [[SecurityCheckChallengeHandlerRN alloc] initWithSecurityCheck:securityCheck];
     [[WLClient sharedInstance] registerChallengeHandler:challenge];
   }
 }

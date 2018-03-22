@@ -9,16 +9,25 @@
 
 //#import "React/RCTEventDispatcher.h"
 
-static NSString *const securityCheck = @"dominoSecurityCheck";
+static NSString *const kLoginNotification = @"RCTLoginNotification";
+
+static void postNotification(NSString* name, NSString* error, id sender)
+{
+  NSDictionary<NSString *, id> *payload = @{@"errMsg": error, @"name": name};
+  [[NSNotificationCenter defaultCenter] postNotificationName:kLoginNotification
+                                                      object:sender
+                                                    userInfo:payload];
+}
 
 @implementation SecurityCheckChallengeHandlerRN{
   SecurityCheckChallengeHandlerEventEmitter* emitter;
   Boolean isChallenged;
 }
+static NSString* const securityCheck = @"dominoSecurityCheck";
 
 - (instancetype)init
 {
-  emitter = [[SecurityCheckChallengeHandlerEventEmitter alloc] init];
+  emitter = [[SecurityCheckChallengeHandlerEventEmitter allocWithZone:nil] init];
   isChallenged = false;
   return self;
 }
@@ -26,26 +35,25 @@ static NSString *const securityCheck = @"dominoSecurityCheck";
 -(void) handleChallenge:(NSDictionary *)challenge {
   isChallenged = true;
   //[challenge setValue:self.securityCheck forKey:@"securityCheck"];
-  //[[NSNotificationCenter defaultCenter] postNotificationName:@"handleChallenge" object:challenge];
-  [emitter sendEvent:@"LOGIN_REQUIRED" params:NULL];
+  postNotification(@"LOGIN_REQUIRED",nil, self);
 }
 
 -(void) handleFailure:(NSDictionary *)failure {
   isChallenged = false;
-  NSDictionary* p = [[NSDictionary alloc] init];
   NSString* error = @"Unknown error";
   if(failure[@"failure"] != NULL){
     error = failure[@"failure"];
   }
-  [p setValue:self.securityCheck forKey:@"secutiryCheck"];
-  [p setValue:error forKey:@"errorMsg"];
-  [emitter sendEvent:@"LOGIN_FAILED" params:failure];
+  NSDictionary *p = [NSDictionary dictionaryWithObjectsAndKeys:
+                        securityCheck, @"securityCheck",
+                        error, @"errorMsg", nil];
+  postNotification(@"LOGIN_FAILED",nil, self);
   
 }
 
 -(void) handleSuccess:(NSDictionary *)success {
   isChallenged = false;
-  [emitter sendEvent:@"LOGIN_SUCCESS" params:NULL];
+  postNotification(@"LOGIN_SUCCESS",nil, self);
   
 }
 
@@ -70,13 +78,10 @@ RCT_EXPORT_METHOD(logout)
     [manager logout:securityCheck withCompletionHandler:^(NSError *error){
       if(error){
         RCTLogInfo(@"Logout failed");
-        NSDictionary* p = [[NSDictionary alloc] init];
-        [p setValue:self.securityCheck forKey:@"secutiryCheck"];
-        [p setValue:[error description] forKey:@"errorMsg"];
-        [emitter sendEvent:@"LOGOUT_FAILURE" params:NULL];
+        postNotification(@"LOGOUT_FAILURE",[error description], self);
       }else{
         RCTLogInfo(@"Logout success");
-        [emitter sendEvent:@"LOGOUT_SUCCESS" params:NULL];
+        postNotification(@"LOGOUT_SUCCESS",nil, self);
       }
     }];
   }
@@ -93,15 +98,11 @@ RCT_EXPORT_METHOD(login:(NSDictionary *)credentials)
   if (challenge != nil) {
     [manager login:securityCheck withCredentials:credentials withCompletionHandler:^(NSError* error) {
         if (error) {
-          NSString *text = [NSString stringWithFormat:@"Login failed. Error: %@", [error description]];
-          RCTLogInfo(text);
-          NSDictionary* p = [[NSDictionary alloc] init];
-          [p setValue:self.securityCheck forKey:@"secutiryCheck"];
-          [p setValue:[error description] forKey:@"errorMsg"];
-          [emitter sendEvent:@"CONNECTION_ERROR" params:NULL];
+          RCTLogInfo(@"Login failed. Error: %@", [error description]);
+          postNotification(@"LOGIN_FAILED",[error description], self);
         } else {
           RCTLogInfo(@"Login success");
-          [emitter sendEvent:@"LOGIN_SUCCESS" params:NULL];
+          postNotification(@"LOGIN_SUCCESS",nil, self);
         }
       }
     ];

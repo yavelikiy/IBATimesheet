@@ -9,26 +9,38 @@
 #import "SecurityCheckChallengeHandlerEventEmitter.h"
 
 
-
+static NSString *const kLoginNotification = @"RCTLoginNotification";
 
 @implementation SecurityCheckChallengeHandlerEventEmitter
 RCT_EXPORT_MODULE();
 
-- (instancetype)init
-{
+-(instancetype)init{
   self = [super init];
-  if (self) {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sendHandleChallenge:) name:@"handleChallenge" object:nil];
-  }
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(handleLoginNotification:)
+                                               name:kLoginNotification
+                                             object:nil];
   return self;
 }
 
-- (NSArray<NSString *> *)supportedEvents {
-  return @[@"handleChallenge",@""];
++ (id)allocWithZone:(NSZone *)zone {
+  static SecurityCheckChallengeHandlerEventEmitter *sharedInstance = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    sharedInstance = [super allocWithZone:zone];
+  });
+  return sharedInstance;
 }
 
--(void) sendEvent:(NSString *)name params:(NSDictionary *)params{
-  [self sendEventWithName:name body:params];
+
+
+- (NSArray<NSString *> *)supportedEvents {
+  return @[@"LOGIN_REQUIRED",@"LOGIN_SUCCESS",@"LOGIN_FAILED",@"LOGOUT_SUCCESS",@"LOGOUT_FAILURE",@"CONNECTION_ERROR"];
+}
+
+- (void)handleLoginNotification:(NSNotification *)notification
+{
+  [self sendEventWithName:notification.userInfo[@"name"] body:notification.userInfo];
 }
 
 @end

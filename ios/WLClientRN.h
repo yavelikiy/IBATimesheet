@@ -13,7 +13,7 @@
 #import <IBMMobileFirstPlatformFoundation/IBMMobileFirstPlatformFoundation.h>
 
 @interface WLClientRN : NSObject<RCTBridgeModule>
--(void)registerChallengeHandler:(NSString *)securityCheck;
+-(void)registerChallengeHandler;
 @end
 
 #endif /* WLClientRN_h */

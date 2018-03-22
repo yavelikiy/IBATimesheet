@@ -363,8 +363,11 @@ export default class CreateTimesheet extends Component {
 
   addListeners() {
     var that = this;  
-    BackAndroid.addEventListener('hardwareBackPress', this.backHandler);     
-    this.challengeEventModuleSubscription  = DeviceEventEmitter.addListener(
+    BackAndroid.addEventListener('hardwareBackPress', this.backHandler);    
+    var emitter;
+    const {SecurityCheckChallengeHandlerEventEmitter} = NativeModules;
+    emitter = new NativeEventEmitter(NativeModules.SecurityCheckChallengeHandlerEventEmitter);
+    this.challengeEventModuleSubscription  = emitter.addListener(
       'LOGIN_REQURIED', function (challenge) {
       	Alert.alert(
 					'Login required',

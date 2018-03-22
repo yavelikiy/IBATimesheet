@@ -14,7 +14,8 @@
 
 
 @interface SecurityCheckChallengeHandlerEventEmitter : RCTEventEmitter <RCTBridgeModule>
--(void) sendEvent:(NSString *)name params:(NSDictionary *)params;
++ (id)allocWithZone:(NSZone *)zone;
+- (void)handleLoginNotification:(NSNotification *)notification;
 @end
 
 #endif /* SecurityCheckChallengeHandlerEventEmitter_h */

@@ -23,58 +23,62 @@ RCT_EXPORT_MODULE();
 
 - (NSDictionary *)constantsToExport
 {
-  return @{ @"GET": GET_METHOD, @"POST" : POST_METHOD };
+  return @{ @"GET": WLHttpMethodGet, @"POST" : WLHttpMethodPost, @"PUT" : WLHttpMethodPut, @"DELETE" : WLHttpMethodDelete };
 }
 
 RCT_EXPORT_METHOD(requestWithURL:(NSString *)urlString method:(NSString *)method: (RCTResponseErrorBlock)errorBlock:(RCTResponseSenderBlock)callback)
 {
-//  NSURL *url = [NSURL URLWithString:urlString];
-//  WLResourceRequest* resourceRequest = [WLResourceRequest requestWithURL:url method:WLHttpMethodGet];
-//  [resourceRequest sendWithCompletionHandler:^(WLResponse *response, NSError *error) {
-//    NSString* resultText;
-//    if(error != nil){
-//      resultText = @"Invocation failure.";
-//      resultText = [resultText stringByAppendingString: error.description];
-//      errorBlock(error);
-//    }
-//    else{
-//      resultText = response.responseText;
-//      callback(@[resultText]);
-//    }
-//  }];
+  NSURL *url = [NSURL URLWithString:urlString];
+  //method = [[self constantsToExport] valueForKey:method];
+  WLResourceRequest* resourceRequest = [WLResourceRequest requestWithURL:url method:method];
+  [resourceRequest sendWithCompletionHandler:^(WLResponse *response, NSError *error) {
+    NSString* resultText;
+    if(error != nil){
+      resultText = @"Invocation failure.";
+      resultText = [resultText stringByAppendingString: error.description];
+      errorBlock(error);
+    }
+    else{
+      resultText = response.responseText;
+      callback(@[resultText]);
+    }
+  }];
 }
 
 RCT_EXPORT_METHOD(asyncRequestWithURL:(NSString *)urlString method:(NSString *)method resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
-//  NSURL *url = [NSURL URLWithString:urlString];
-//  WLResourceRequest* resourceRequest = [WLResourceRequest requestWithURL:url method:WLHttpMethodGet];
-//  [resourceRequest sendWithCompletionHandler:^(WLResponse *response, NSError *error) {
-//    NSString* resultText;
-//    if(error != nil){
-//      resultText = @"Invocation failure.";
-//      reject(@"Invocation failure.", resultText, error);
-//    }
-//    else{
-//      resolve(response.responseText);
-//    }
-//  }];
+  NSURL *url = [NSURL URLWithString:urlString];
+  //method = [[self constantsToExport] valueForKey:method];
+  WLResourceRequest* resourceRequest = [WLResourceRequest requestWithURL:url method:WLHttpMethodGet];
+  [resourceRequest sendWithCompletionHandler:^(WLResponse *response, NSError *error) {
+    NSString* resultText;
+    if(error != nil){
+      resultText = @"Invocation failure.";
+      reject(@"Invocation failure.", resultText, error);
+    }
+    else{
+      resolve(response.responseText);
+    }
+  }];
 }
 
 
 RCT_EXPORT_METHOD(asyncRequestWithURLBody:(NSString *)urlString params:(NSString *)params method:(NSString *)method resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
-  //  NSURL *url = [NSURL URLWithString:urlString];
-  //  WLResourceRequest* resourceRequest = [WLResourceRequest requestWithURL:url method:WLHttpMethodGet];
-  //  [resourceRequest sendWithCompletionHandler:^(WLResponse *response, NSError *error) {
-  //    NSString* resultText;
-  //    if(error != nil){
-  //      resultText = @"Invocation failure.";
-  //      reject(@"Invocation failure.", resultText, error);
-  //    }
-  //    else{
-  //      resolve(response.responseText);
-  //    }
-  //  }];
+    NSURL *url = [NSURL URLWithString:urlString];
+    //method = [[self constantsToExport] valueForKey:method];
+    WLResourceRequest* resourceRequest = [WLResourceRequest requestWithURL:url method:method];
+    [resourceRequest sendWithBody:params completionHandler:^(WLResponse *response, NSError *error) {
+      NSString* resultText;
+      if(error != nil){
+        resultText = @"Invocation failure.";
+        reject(@"Invocation failure.", resultText, error);
+      }
+      else{
+        resolve(response.responseText);
+      }
+    }];
 }
+
 
 @end

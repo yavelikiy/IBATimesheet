@@ -32,7 +32,9 @@ RCT_EXPORT_MODULE();
   return sharedInstance;
 }
 
-
+//+ (BOOL)requiresMainQueueSetup{
+//  return [super requiresMainQueueSetup];
+//}
 
 - (NSArray<NSString *> *)supportedEvents {
   return @[@"LOGIN_REQUIRED",@"LOGIN_SUCCESS",@"LOGIN_FAILED",@"LOGOUT_SUCCESS",@"LOGOUT_FAILURE",@"CONNECTION_ERROR"];

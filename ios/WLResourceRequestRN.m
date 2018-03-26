@@ -53,6 +53,7 @@ RCT_EXPORT_METHOD(asyncRequestWithURL:(NSString *)urlString method:(NSString *)m
   [resourceRequest sendWithCompletionHandler:^(WLResponse *response, NSError *error) {
     NSString* resultText;
     if(error != nil){
+      RCTLog(@"WL REQUEST: %@", [error description]);
       resultText = @"Invocation failure.";
       reject(@"Invocation failure.", resultText, error);
     }
@@ -71,6 +72,7 @@ RCT_EXPORT_METHOD(asyncRequestWithURLBody:(NSString *)urlString params:(NSString
     [resourceRequest sendWithBody:params completionHandler:^(WLResponse *response, NSError *error) {
       NSString* resultText;
       if(error != nil){
+        RCTLog(@"WL REQUEST BODY: %@", [error description]);
         resultText = @"Invocation failure.";
         reject(@"Invocation failure.", resultText, error);
       }

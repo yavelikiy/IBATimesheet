@@ -27,6 +27,7 @@ import RichTextToolbar from '../components/RichTextToolbar';
 import BlueActivityIndicator from '../components/BlueActivityIndicator';
 import WLResourceRequestRN from '../wrappers/WLResourceRequestRN'
 //import GridView from 'react-native-grid-view';
+import { Col, Row, Grid } from 'react-native-easy-grid';
 import GlobalStyle from '../styles/GlobalStyle'
 
 import Swiper from 'react-native-swiper';
@@ -156,6 +157,7 @@ export default class Timesheet extends Component {
         headerTitleStyle: [GlobalStyle.actionBarHeader,{marginLeft:0}],
         headerTintColor: 'white',
           //headerLeft: <LeftBarButton onPress={() => {navigation.state.params.updateTimesheets(); navigation.goBack()} } />,
+          // use font 40 for iOS app
           headerRight: 
               <View>
                 {navigation.state.params.alreadySent &&
@@ -164,10 +166,10 @@ export default class Timesheet extends Component {
                 {!navigation.state.params.alreadySent &&
                   <BaseView style={{ flexDirection : 'row'}}>
                       <Button underlayColor="#ccc" transparent onPress={() => navigation.state.params.saveTimesheet()}>
-                        <Icon name="checkmark" style={{color:'#FFF'}}/>
+                        <Icon name="checkmark" style={{color:'#FFF', fontSize:30}}/>
                       </Button>
                       <Button underlayColor="#ccc" transparent onPress={() => navigation.state.params.sendPopup()}>
-                        <Icon name="send" style={{color:'#F2CA27'}} />
+                        <Icon name="send" style={{color:'#F2CA27', fontSize:30}} />
                       </Button>
                   </BaseView>
                 }
@@ -212,7 +214,7 @@ export default class Timesheet extends Component {
       })
       .then( response => {
           this.setState({isLoading : false});
-          var ts = this.props.navigation.params.timesheet;
+          var ts = this.props.navigation.state.params.timesheet;
           ts.status = 'approval';
           this.props.navigation.setParams({alreadySent: true});
           alert('Approval has been requested.')
@@ -274,8 +276,8 @@ export default class Timesheet extends Component {
                   {this.getAllTypes()}
                   </ScrollView>
                 }
-                {/* {this.state.useGrid &&
-                  <GridView
+                {this.state.useGrid &&
+                  /* <GridView
                     items={this.state.timeTypes}
                     enableEmptySections={true}
                     itemsPerRow={4}
@@ -295,8 +297,11 @@ export default class Timesheet extends Component {
                                           </TouchableHighlight>
                     }
                     style={styles.modalInner}
-                  />
-                } */}
+                  /> */
+                  <Grid style={styles.modalInner}>
+                   {this.getAllTypesGrid()}
+                  </Grid>
+                }
                 </TouchableOpacity>
               </Modal>
               <Modal 
@@ -378,28 +383,111 @@ export default class Timesheet extends Component {
     return hours;
 }
 
-   getAllTypes(){
-      var result = [];
-      for(var i=0; i<this.state.timeTypes.length; i++){
-        result.push( 
-           <TouchableHighlight 
-            key={i}
-            underlayColor="#AAA"
-            onPress={ this.changeTimeType.bind(this, this.state.timeTypes[i])}
-            style={styles.textButtonModal}
-          >
-            <View>
-              <Text style={styles.textModal}>
-                {this.state.timeTypes[i]}
-              </Text>
-              <View style={{flexDirection: 'row'}}>
-                <View style={styles.underlineModal}></View>
-              </View>
+getAllTypes(){
+  var result = [];
+  for(var i=0; i<this.state.timeTypes.length; i++){
+    result.push( 
+       <TouchableHighlight 
+        key={i}
+        underlayColor="#AAA"
+        onPress={ this.changeTimeType.bind(this, this.state.timeTypes[i])}
+        style={styles.textButtonModal}
+      >
+        <View>
+          <Text style={styles.textModal}>
+            {this.state.timeTypes[i]}
+          </Text>
+          <View style={{flexDirection: 'row'}}>
+            <View style={styles.underlineModal}></View>
+          </View>
+        </View>
+      </TouchableHighlight>) ;
+  }
+  return result;
+}
+getAllTypesGrid(){
+  var resultRows = [];
+   for(var i=0; i<this.state.timeTypes.length; i+=4){
+     resultRows.push(<Row style={{ height: 70 }}>
+      <Col>
+        <TouchableHighlight 
+          key={i}
+          underlayColor="#AAA"
+          onPress={ this.changeTimeType.bind(this, this.state.timeTypes[i])}
+          style={styles.textButtonModal}
+        >
+          <View>
+            <Text style={styles.textModal}>
+              {this.state.timeTypes[i]}
+            </Text>
+            <View style={{flexDirection: 'row'}}>
+              <View style={styles.underlineModal}></View>
             </View>
-          </TouchableHighlight>) ;
+          </View>
+        </TouchableHighlight>
+      </Col>
+      { (i+1 < this.state.timeTypes.length) &&
+      <Col>
+        <TouchableHighlight 
+          key={i}
+          underlayColor="#AAA"
+          onPress={ this.changeTimeType.bind(this, this.state.timeTypes[i+1])}
+          style={styles.textButtonModal}
+        >
+          <View>
+            <Text style={styles.textModal}>
+              {this.state.timeTypes[i+1]}
+            </Text>
+            <View style={{flexDirection: 'row'}}>
+              <View style={styles.underlineModal}></View>
+            </View>
+          </View>
+        </TouchableHighlight>
+      </Col>
       }
-      return result;
-    }
+      { (i+2 < this.state.timeTypes.length) &&
+      <Col>
+        <TouchableHighlight 
+          key={i}
+          underlayColor="#AAA"
+          onPress={ this.changeTimeType.bind(this, this.state.timeTypes[i+2])}
+          style={styles.textButtonModal}
+        >
+          <View>
+            <Text style={styles.textModal}>
+              {this.state.timeTypes[i+2]}
+            </Text>
+            <View style={{flexDirection: 'row'}}>
+              <View style={styles.underlineModal}></View>
+            </View>
+          </View>
+        </TouchableHighlight>
+      </Col>
+      }
+      { (i+3 < this.state.timeTypes.length) &&
+      <Col>
+        <TouchableHighlight 
+          key={i}
+          underlayColor="#AAA"
+          onPress={ this.changeTimeType.bind(this, this.state.timeTypes[i+3])}
+          style={styles.textButtonModal}
+        >
+          <View>
+            <Text style={styles.textModal}>
+              {this.state.timeTypes[i+3]}
+            </Text>
+            <View style={{flexDirection: 'row'}}>
+              <View style={styles.underlineModal}></View>
+            </View>
+          </View>
+        </TouchableHighlight>
+      </Col>
+      }
+    </Row>);
+   }
+   return resultRows;
+ }
+
 
   renderTimeType(timeType){
     return  <TouchableHighlight 

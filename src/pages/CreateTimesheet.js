@@ -9,12 +9,14 @@ import {
   ScrollView,
   Alert,
   Picker,
+  PickerIOS,
   Modal,
   TouchableOpacity,
   NativeModules,
   DeviceEventEmitter,
   NativeEventEmitter,
   TouchableHighlight,
+  Platform
 } from 'react-native';
 import {Icon, Button, Label, Text as BaseText} from 'native-base';
 
@@ -62,10 +64,6 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     marginBottom: 4,
   },
-  pickerText:{
-    color: '#FFF',
-
-  },
   modalOuter:{
     flex: 1,
     flexDirection: 'column',
@@ -87,14 +85,44 @@ export default class CreateTimesheet extends Component {
 	constructor(props) {
         super(props);
         this.updateTimesheets = this.props.navigation.state.params.updateTimesheets;
+  			const { params } = this.props.navigation.state;
+				const {setParams} = this.props.navigation;
+
+        // this.setState({
+        // 	user : params.user,
+        // 	users : params.users,
+        // 	projects : params.projects,
+        // 	project : null,
+        // 	date : new Date()
+        // });
+
+        var firstDate = new Date();
+        firstDate.setMonth(firstDate.getMonth() - 1);
+        var m = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        this.state = {
+        	user : DEFAULT_PROJECT,
+        	users : [{ fullName : DEFAULT_PROJECT}],
+        	projects : [{name: DEFAULT_PROJECT}],
+        	months : m,
+        	project : DEFAULT_PROJECT,
+        	date : firstDate,
+          period: 1,
+        	message: 'error here',
+	        useDebug: typeof(params) != "undefined" && typeof(params.useDebug) != "undefined" ? params.useDebug : true,
+	        isLoading : true,
+        };
+        setParams({project:null, month: firstDate.getMonth() + 1, year:firstDate.getFullYear(), months: m, that : this});
     }
 
 	static navigationOptions = ({ navigation }) => ({ 
         title: 'Create Timesheet',
         headerStyle: GlobalStyle.globalBackgroundDark,
         headerTitleStyle: [GlobalStyle.actionBarHeader,{marginLeft:0}],
-        headerLeft: <LeftBarButton onPress={() => {navigation.state.params.updateTimesheets(); navigation.goBack()} } />,
-        headerRight:<View style={{padding:4}}><Button underlayColor="#ccc" transparent iconRight onPress={() => {
+        headerTintColor: 'white',
+        // use headerTintColor for ios
+        //headerLeft: <LeftBarButton onPress={() => {navigation.state.params.updateTimesheets(); navigation.goBack()} } />,
+        headerRight:<View style={{paddingRight:4, paddingTop:4, paddingBottom:4, paddingLeft:14}}><Button underlayColor="#ccc" transparent iconRight onPress={() => {
+                    // was padding:4
                     if(navigation.state.params.project === null) {
                       alert('Select a project, please.');
                     }
@@ -116,39 +144,12 @@ export default class CreateTimesheet extends Component {
                       //alert(JSON.stringify(timesheet));
                       navigation.state.params.that.setState({isLoading: true});
                       CreateTimesheet.sendCreateTimesheetRequest(JSON.stringify(timesheet), navigation);
-                }
+                  }
                 }
               }>
-                        <BaseText style={{color: '#F2CA27', marginRight:4}}>Create</BaseText>
-                        <Icon name="create"  style={{color: '#F2CA27'}}/>
+                        <BaseText style={{color: '#F2CA27'}}>Create</BaseText><Icon name="create"  style={{color: '#F2CA27'}}/>
                     </Button></View>,
     });
-
-   // headerRight: <TouchableHighlight 
-   //            style={GlobalStyle.barButton} 
-   //            onPress={() => {
-   //                  if(navigation.state.params.project === null) {
-   //                    alert('Select a project, please.');
-   //                  }
-   //                  else{
-   //                    var month = (navigation.state.params.months.indexOf(navigation.state.params.month)+1);
-   //                    var textMonth = month > 9 ? ""+month : "0"+month; 
-   //                    var user = navigation.state.params.user;
-   //                    var project = navigation.state.params.project;
-   //                    var timesheet = {
-   //                      yearMonth: navigation.state.params.year+"-"+textMonth, 
-   //                      project: {name: project}, 
-   //                      employee:{fullName: user}
-   //                    };
-   //                    //alert(JSON.stringify(timesheet));
-   //                    CreateTimesheet.sendCreateTimesheetRequest(JSON.stringify(timesheet), navigation);
-   //              }
-   //              }
-   //            }
-   //            >
-   //                      <Text style={GlobalStyle.barButtonLabel}>Create</Text>
-   //                  </TouchableHighlight>,
-
 
 
     static async sendCreateTimesheetRequest(timesheet, navigation){
@@ -168,7 +169,15 @@ export default class CreateTimesheet extends Component {
     }
 
     init(){
-    	// Создаётся объект promise
+      // Создаётся объект promise
+    if(this.state.useDebug){
+	  	var data = [{"name": "MAD"},{"name": "Обучение 2nd Dept"}];
+	  	this.handleProjectListResponse(data);
+	  	data = {"fullName": "Светлаков Сергей", notesAddr: null};
+      this.handleProfileResponse(data);
+      this.setState({isLoading : false});
+      return;   
+    }
 		let promiseProfile = new Promise((resolve, reject) => {
 		      var result
 		      result = WLResourceRequestRN.asyncRequestWithURL(PROFILE_REQUEST, WLResourceRequestRN.GET);
@@ -205,19 +214,19 @@ export default class CreateTimesheet extends Component {
 
 
 
-    getAllUsernames(){
-    	var result = [];
-    	for(var i=0; i<this.state.users.length; i++){
-    		result.push( <Picker.Item key={i} label={this.state.users[i].fullName} value={this.state.users[i].fullName} />) ;
-    	}
+    getAllUsernames(PickerItem){
+      var result = [];
+      for(var i=0; i<this.state.users.length; i++){
+        result.push( <PickerItem key={i} label={this.state.users[i].fullName} value={this.state.users[i].fullName} />) ;
+      }
     	return result;
     }
 
-    getAllProjects(){
+    getAllProjects(PickerItem){
     	var result = [];
-    	for(var i=0; i<this.state.projects.length; i++){
-    		result.push( <Picker.Item key={i} label={this.state.projects[i].name} value={this.state.projects[i].name} />) ;
-    	}
+      for(var i=0; i<this.state.projects.length; i++){
+        result.push( <PickerItem key={i} label={this.state.projects[i].name} value={this.state.projects[i].name} />) ;
+      }
     	return result;
     }
 
@@ -225,13 +234,13 @@ export default class CreateTimesheet extends Component {
     	//alert('call to MFP');
     }
 
-    getAllPeriods(){
+    getAllPeriods(PickerItem){
       var result = [];
       var year = this.state.date.getFullYear();
       var month = this.state.date.getMonth();
 
       for(var i=0; i<4; i++){
-        result.push( <Picker.Item key={i} label={this.state.months[month] +' '+year} value={i} />) ;
+        result.push( <PickerItem key={i} label={this.state.months[month] +' '+year} value={i} />) ;
         if(month < 11)
           month++;
         else{
@@ -266,75 +275,90 @@ export default class CreateTimesheet extends Component {
             	<View 
 	            	style={[GlobalStyle.picker, GlobalStyle.pickerBackgroundColor5]}
 	           	>
-		            <Picker 
+		            {Platform.OS == 'android' && this.state.users.length > 1 && 
+                <Picker
 	            		style={GlobalStyle.pickerText}
 		            	selectedValue={this.state.user}
               		enabled={!this.state.isLoading}
 		            	onValueChange={(u) => this.changeUser(u)}
 		            > 
-		            	{this.getAllUsernames()}	
+		            	{this.getAllUsernames(Picker.Item)}	
 		            </Picker>
+                }
+                {Platform.OS == 'ios' && this.state.users.length > 1 &&
+                 
+                <PickerIOS 
+	            		itemStyle={GlobalStyle.pickerText}
+		            	selectedValue={this.state.user}
+              		enabled={!this.state.isLoading}
+		            	onValueChange={(u) => this.changeUser(u)}
+		            > 
+		            	{this.getAllUsernames(PickerIOS.Item)}	
+		            </PickerIOS>
+                }
+                {this.state.users.length <= 1 && 
+                <Text style={GlobalStyle.pickerText}> 
+		            	{this.state.users[0].fullName}	
+		            </Text>
+                }
 		        </View>
 	            <Label style={{ marginBottom: 10, color: '#004274'}}>Period</Label>
 	            <View style={styles.row}>
 	            	<View 
 	            		style={[GlobalStyle.picker, GlobalStyle.pickerBackgroundColor5]}
 	           		>
+                 {Platform.OS == 'android' &&
 			            <Picker 
 		            		style={GlobalStyle.pickerText}
 			            	selectedValue={this.state.period}
               			enabled={!this.state.isLoading}
 			            	onValueChange={(period, index) => this.changePeriod(period)}
 			            > 
-			            	{this.getAllPeriods()}	
+			            	{this.getAllPeriods(Picker.Item)}	
 			            </Picker>
+                 }
+                 {Platform.OS == 'ios' &&
+			            <PickerIOS 
+		            		itemStyle={GlobalStyle.pickerText}
+			            	selectedValue={this.state.period}
+              			enabled={!this.state.isLoading}
+			            	onValueChange={(period, index) => this.changePeriod(period)}
+			            > 
+			            	{this.getAllPeriods(PickerIOS.Item)}	
+			            </PickerIOS>
+                 }
 		        	</View>
 		        </View>
               <Label style={{ marginBottom: 10, color: '#004274'}}>Project</Label>
             	<View 
 	            	style={[GlobalStyle.picker, GlobalStyle.pickerBackgroundColor5]}
 	           	>
-		            <Picker 
-		            	style={GlobalStyle.pickerText}
+               {Platform.OS == 'android' &&
+              <Picker 
+                style={GlobalStyle.pickerText}
+                selectedValue={this.state.project} 
+                enabled={!this.state.isLoading}
+                onValueChange={(p) => this.changeProject(p)}
+              > 
+                {this.getAllProjects(Picker.Item)}	
+              </Picker>
+               }
+                 {Platform.OS == 'ios' &&
+		            <PickerIOS 
+		            	itemStyle={GlobalStyle.pickerText}
 		            	selectedValue={this.state.project} 
               		enabled={!this.state.isLoading}
 		            	onValueChange={(p) => this.changeProject(p)}
 		            > 
-		            	{this.getAllProjects()}	
-		            </Picker>
+		            	{this.getAllProjects(PickerIOS.Item)}	
+		            </PickerIOS>
+                 }
 		        </View>
             </View>
         );
     }
 
   componentWillMount(){
-  			const { params } = this.props.navigation.state;
-				const {setParams} = this.props.navigation;
-
-        // this.setState({
-        // 	user : params.user,
-        // 	users : params.users,
-        // 	projects : params.projects,
-        // 	project : null,
-        // 	date : new Date()
-        // });
-
-        var firstDate = new Date();
-        firstDate.setMonth(firstDate.getMonth() - 1);
-        var m = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        this.state = {
-        	user : DEFAULT_PROJECT,
-        	users : [{ fullName : DEFAULT_PROJECT}],
-        	projects : [{name: DEFAULT_PROJECT}],
-        	months : m,
-        	project : DEFAULT_PROJECT,
-        	date : firstDate,
-          period: 1,
-        	message: 'error here',
-	        useDebug: typeof(params) != "undefined" && typeof(params.useDebug) != "undefined" ? params.useDebug : false,
-	        isLoading : true,
-        };
-        setParams({project:null, month: firstDate.getMonth() + 1, year:firstDate.getFullYear(), months: m, that : this});
         this.addListeners();
   }
 
@@ -368,6 +392,9 @@ export default class CreateTimesheet extends Component {
     var emitter;
     const {SecurityCheckChallengeHandlerEventEmitter} = NativeModules;
     emitter = new NativeEventEmitter(NativeModules.SecurityCheckChallengeHandlerEventEmitter);
+    if( Platform.OS === 'android'){
+      emitter = DeviceEventEmitter;
+    }     
     this.challengeEventModuleSubscription  = emitter.addListener(
       'LOGIN_REQUIRED', function (challenge) {
       	Alert.alert(
@@ -395,7 +422,11 @@ export default class CreateTimesheet extends Component {
     this.setState({isLoading: true, period: p});
     const {setParams} = this.props.navigation;
     setParams({month: month, year: year});
-    this.fetchProjectList( year, month);
+    if(!this.state.useDebug){
+      this.fetchProjectList( year, month);
+    }else{
+      this.setState({isLoading : false});
+    }
   }
 
   changeProject(p){
@@ -448,7 +479,7 @@ export default class CreateTimesheet extends Component {
       this.handleProjectListResponse(JSON.parse(result));
     } catch (e) {
       error = e;
-      alert("Failed to retrieve entry - " + error.message : "");
+      alert("Failed to retrieve entry - " + error.message);
     }
     this.setState({isLoading: false});
   }
@@ -463,7 +494,7 @@ export default class CreateTimesheet extends Component {
       this.handleProfileResponse(JSON.parse(result));
     } catch (e) {
       error = e;
-      alert("Failed to retrieve entry - " + error.message : "");
+      alert("Failed to retrieve entry - " + error.message);
     }
     this.setState({isLoading: false});
   }

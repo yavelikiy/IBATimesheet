@@ -33,7 +33,6 @@ import WLResourceRequestRN from '../wrappers/WLResourceRequestRN'
 
 import GlobalStyle from '../styles/GlobalStyle'
 
-const TIMESHEETS_PER_ROW = 2;
 const _DEBUG = true;
 //var TIMESHEET_LIST_REQUEST = "/adapters/timesheetAdapter/statuses";
 const TIMESHEET_LIST_REQUEST = "/adapters/timesheetAdapter/timesheets/my";
@@ -104,7 +103,7 @@ export default class Timesheets extends Component {
           message: '',
           refreshing: false,
           loggedIn: isloggedIn,
-          useDebug: typeof(params) != "undefined" && typeof(params.useDebug) != "undefined" ? params.useDebug : false,
+          useDebug: typeof(params) != "undefined" && typeof(params.useDebug) != "undefined" ? params.useDebug : true,
 	    }
 
       if(!isloggedIn){
@@ -169,6 +168,7 @@ export default class Timesheets extends Component {
                 {  this.getMonthTimesheetsContainerFull(4)}  
           
         </Swiper>
+        {Platform.OS == 'android' &&
         <View style={{backgroundColor:'#00000000', height:82, position: 'absolute', bottom: 2, right: 2}}>
           <Right small>
             <Button rounded style={{backgroundColor:'#e15554', width: 80, height:80}} underlayColor="#fff"  onPress={() => this.pressCreate()}>
@@ -176,6 +176,13 @@ export default class Timesheets extends Component {
             </Button>
           </Right>
           </View>
+        }
+        {Platform.OS == 'ios' &&
+        <Button block style={{backgroundColor:'#e15554', margin:4}} underlayColor="#fff"  onPress={() => this.pressCreate()}>
+          <BaseText style={{color: '#fff'}}>New timesheet</BaseText>
+          <Icon name='create'/>
+        </Button>
+        }
       </View>
     );
   }
@@ -207,6 +214,7 @@ export default class Timesheets extends Component {
               {  this.getMonthTimesheetsContainer(2)}  
 
         </Content>
+        {Platform.OS == 'android' &&
         <View style={{backgroundColor:'#00000000', height:82, position: 'absolute', bottom: 2, right: 2}}>
           <Right small>
             <Button rounded style={{backgroundColor:'#e15554', width: 80, height:80}} underlayColor="#fff"  onPress={() => this.pressCreate()}>
@@ -214,6 +222,14 @@ export default class Timesheets extends Component {
             </Button>
           </Right>
         </View>
+        }
+        {Platform.OS == 'ios' &&
+        <View style={{backgroundColor:'#00000000'}}>
+            <Button style={{backgroundColor:'#e15554'}} underlayColor="#fff"  onPress={() => this.pressCreate()}>
+              <Icon name='create' />
+            </Button>
+        </View>
+        }
       </Container>
     );
   }
@@ -234,6 +250,7 @@ export default class Timesheets extends Component {
                                                                     'Timesheet',{
                                                                       timesheetTitle : item.project.name, 
                                                                       timesheet: item,    
+                                                                      useDebug: this.state.useDebug,
                                                                       date: new Date(this.getCurrentYear(), this.getCurrentMonth(), 1),        
                                                                       updateTimesheets: () => {
                                                                         this.props.navigation.state.params.Timesheets._onRefresh();

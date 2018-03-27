@@ -13,11 +13,12 @@ import {
   NativeModules,
   NativeEventEmitter,
   AsyncStorage,
-  DeviceEventEmitter
+  DeviceEventEmitter,
+  Platform
 } from 'react-native';
 
 import { NavigationActions } from 'react-navigation';
-import {Icon, Button, Content, Form, Label, Input, Header, Item, Footer} from 'native-base';
+import {Icon, Button, Content, Form, Label, Input, Header, Item, Footer, Text as BaseText} from 'native-base';
 
 import Container from '../components/Container';
 import KeyboardHandler from '../components/KeyboardHandler';
@@ -41,7 +42,7 @@ export default class Login extends Component {
             password: "",
             error: " ",
             isLoading: false,
-            useDebug: false,
+            useDebug: true,
         };  
           //this.registerChallengeHandler();
       }
@@ -106,10 +107,22 @@ export default class Login extends Component {
     }else{
       AsyncStorage.multiRemove(['username', 'password']);
     }
-    //this.refs["indicator"].start();
-    this.setState({ isLoading: true});
-    // Try to login with specified credentials
-		SecurityCheckChallengeHandlerRN.login({ 'username': this.state.username.trim(), 'password': this.state.password.trim() });
+    if(this.state.useDebug){
+      const resetAction = NavigationActions.reset({
+        index: 0,
+        actions: [
+          NavigationActions.navigate({ 
+            routeName: 'Timesheets',
+            params: {loggedIn:true, useDebug:this.state.useDebug}})
+        ]
+      });
+      this.props.navigation.dispatch(resetAction);
+    }else{
+      //this.refs["indicator"].start();
+      this.setState({ isLoading: true});
+      // Try to login with specified credentials
+      SecurityCheckChallengeHandlerRN.login({ 'username': this.state.username.trim(), 'password': this.state.password.trim() });
+    }
 	}
 
   render2(){
@@ -153,8 +166,8 @@ export default class Login extends Component {
                 underlayColor="#ccc" 
                 style={{backgroundColor: '#FFAB00'}}  
                 onPress={() => this.pressSignIn()}>
+                <BaseText style={{fontSize: 20, color: '#004274',}} >Sign In</BaseText>
                 <Icon name="log-in" style={{fontSize: 40, color: '#004274',}}/>
-                <Text style={{fontSize: 20, color: '#004274',}} >Sign In</Text>
               </Button>
         </Content>
       </Container>
@@ -238,7 +251,7 @@ export default class Login extends Component {
                 style={{backgroundColor: '#ffc808', padding:4}}  
                 onPress={() => this.pressSignIn()}>
                 <Icon name="log-in" style={{fontSize: 40, color: '#004274',}}/>
-                <Text style={{fontSize: 20, color: '#004274',}} >Sign In</Text>
+                <BaseText style={{fontSize: 20, color: '#004274',}} >Sign In</BaseText>
               </Button>
           </Container>
         </KeyboardHandler>
@@ -272,15 +285,12 @@ export default class Login extends Component {
 
   addListeners() {
     var that = this; 
-    var emitter;   
+    var emitter;
     const {SecurityCheckChallengeHandlerEventEmitter} = NativeModules;
     emitter = new NativeEventEmitter(NativeModules.SecurityCheckChallengeHandlerEventEmitter);
-    // if( Platform.OS == 'iOS'){
-    //   emitter = NativeEventEmitter;
-
-    // }else{
-    //   emitter = DeviceEventEmitter;   
-    // }
+    if( Platform.OS === 'android'){
+      emitter = DeviceEventEmitter;
+    }     
     //need to login
     this.challengeEventModuleSubscription  = emitter.addListener(
         'LOGIN_REQUIRED', function (e) {

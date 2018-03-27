@@ -132,6 +132,7 @@ export default class Timesheet extends Component {
         isPreRequestApproval: false,
         useGrid : true,
         alreadySent : this.props.navigation.state.params.timesheet.status !== 'draft',
+        useDebug: typeof(params) != "undefined" && typeof(params.useDebug) != "undefined" ? params.useDebug : true,
     };   
 
     this.props.navigation.setParams(
@@ -153,7 +154,8 @@ export default class Timesheet extends Component {
         title: `${navigation.state.params.timesheetTitle}`,
         headerStyle: GlobalStyle.globalBackgroundDark,
         headerTitleStyle: [GlobalStyle.actionBarHeader,{marginLeft:0}],
-          headerLeft: <LeftBarButton onPress={() => {navigation.state.params.updateTimesheets(); navigation.goBack()} } />,
+        headerTintColor: 'white',
+          //headerLeft: <LeftBarButton onPress={() => {navigation.state.params.updateTimesheets(); navigation.goBack()} } />,
           headerRight: 
               <View>
                 {navigation.state.params.alreadySent &&
@@ -226,8 +228,12 @@ export default class Timesheet extends Component {
   }
 
   componentDidMount(){
-    BackAndroid.addEventListener('hardwareBackPress', this.backHandler);   
-    this.getCodeListAsPromise();
+    BackAndroid.addEventListener('hardwareBackPress', this.backHandler);  
+    if(!this.state.useDebug){ 
+      this.getCodeListAsPromise();
+    }else{
+      this.setState({isLoading : false});
+    }
   }
 
   componentWillUnmount(){
@@ -250,6 +256,7 @@ export default class Timesheet extends Component {
                 today={this.state.today}
                 timesheet={this.props.navigation.state.params.timesheet}
                 onDateSelect={(date) => this.handleDateSelect(date)} />
+              <Text>{this.getHours(this.state.timesheet.tables)} hour(s)</Text>
                <Modal 
                 animationType={"fade"} 
                 transparent={true} 
@@ -361,135 +368,15 @@ export default class Timesheet extends Component {
 			);
   }
 
-  render2() {
-    const {navigate} = this.props.navigation;
-    return(
-        <View style={[styles.container, GlobalStyle.globalBackground]}>   
-          <Swiper>     
-            <Calendar
-              date={this.state.date}
-              today={this.state.today}
-              timesheet={this.props.navigation.state.params.timesheet}
-              onDateSelect={(date) => this.handleDateSelect(date)} />
 
-            <Label style={{marginTop: 10, color: '#004274', padding: 5}}>Comment</Label>
-            <TouchableHighlight 
-                underlayColor="#EEE"
-                onPress={() => navigate(
-                  'TimesheetComment',
-                  {
-                    comment: this.state.timesheet.comment, 
-                    isEditable: this.state.isEditable, 
-                    updateTimesheetComment: (newTimesheetComment) => 
-                      {
-                        var newTimesheet = this.props.navigation.state.params.timesheet;
-                        newTimesheet.comment = newTimesheetComment;
-                        this.setState({timesheet: newTimesheet});
-                        this.props.navigation.setParams({timesheet: newTimesheet});
-                      }
-                  }
-                )} 
-              style={styles.textButton}
-            >
-              <Text
-                style={styles.text} 
-                ellipsizeMode={"tail"}
-                numberOfLines={1}
-              >
-                  {this.getPureComment()}
-              </Text>
-            </TouchableHighlight>
-          </Swiper>
-
-          <Modal 
-            animationType={"fade"} 
-            transparent={true} 
-            visible={this.state.modalVisible} 
-            onRequestClose={() => {this.setState({modalVisible: false});}} 
-          >
-            <TouchableOpacity 
-              style={styles.modalOuter} 
-              onPress={() => this.setState({modalVisible: false})}
-              activeOpacity={0}
-              focusedOpacity={0}
-            >
-            {!this.state.useGrid &&
-              <ScrollView style={styles.modalInner}>
-              {this.getAllTypes()}
-              </ScrollView>
-            }
-            {this.state.useGrid &&
-              <GridView
-                items={this.state.timeTypes}
-                enableEmptySections={true}
-                itemsPerRow={4}
-                renderItem={(item) => <TouchableHighlight 
-                                        underlayColor="#AAA"
-                                        onPress={ this.changeTimeType.bind(this, item)}
-                                        style={styles.textButtonModal}
-                                      >
-                                        <View>
-                                          <Text style={styles.textModal}>
-                                            {item}
-                                          </Text>
-                                          <View style={{flexDirection: 'row'}}>
-                                            <View style={styles.underlineModal}></View>
-                                          </View>
-                                        </View>
-                                      </TouchableHighlight>
-                }
-                style={styles.modalInner}
-              />
-            }
-            </TouchableOpacity>
-          </Modal>
-          <Modal 
-            animationType={"fade"} 
-            transparent={true} 
-            visible={this.state.isLoading} 
-            onRequestClose={() => {this.setState({isLoading:false})}} 
-          >
-            <TouchableOpacity 
-              style={GlobalStyle.activityModalOuter} 
-              onPress={() => this.setState({isLoading: false})}
-              activeOpacity={0}
-              focusedOpacity={0}
-            >
-              <BlueActivityIndicator ref="indicator" animating={true}/>
-            </TouchableOpacity>
-          </Modal>
-          <Modal 
-            animationType={"fade"} 
-            transparent={true} 
-            visible={this.state.isPreRequestApproval} 
-            onRequestClose={() => {}} 
-          >
-            <TouchableOpacity 
-              style={GlobalStyle.activityApprovalModalOuter} 
-              onPress={() => this.setState({isPreRequestApproval: false})}
-              activeOpacity={0}
-              focusedOpacity={0}
-            >
-            <View style={{alignItems: 'center', padding: 10, flex:2}}>
-              <View >
-                <Label style={{color: '#FFF'}}>Request an approval?</Label>
-              </View>
-              <View style={{flexDirection:'row', marginTop: 20}}>
-                <Button underlayColor="#ccc" large transparent style={{padding: 10, marginRight:2, backgroundColor:'#f0c808', flex:1}} onPress={() => this.requestApproval()}>
-                  <Text style={{marginRight: 10, fontSize: 20, color: '#004274'}}>Send</Text>
-                  <Icon name="send" style={{color:'#e15554'}} />
-                </Button>
-                <Button underlayColor="#ccc" large transparent style={{padding: 10, backgroundColor:'#f0c808', flex:1}} onPress={() => this.setState({isPreRequestApproval: false})}>
-                  <Text style={{marginRight: 10, fontSize: 20, color: '#004274'}}>Cancel</Text>
-                  <Icon name="close" style={{color:'#555'}} />
-                </Button>
-              </View>
-            </View>
-            </TouchableOpacity>
-          </Modal>
-        </View>
-      );
-  }
+  getHours(timesheet){
+    var hours = 0;
+    timesheet.forEach(function(day) {
+      if(!isNaN(parseFloat(day.code)))
+        hours += parseFloat(day.code); 
+    }, this);
+    return hours;
+}
 
    getAllTypes(){
       var result = [];
@@ -573,7 +460,7 @@ export default class Timesheet extends Component {
     } catch (e) {
       error = e;
       this.setState({ isLoading: false});
-      alert("Failed to retrieve entry - " + error.message);
+      alert("Failed to retrieve codes - " + error.message);
     }
   }
 
@@ -596,7 +483,7 @@ export default class Timesheet extends Component {
     } catch (e) {
       error = e;
       this.setState({ isLoading: false});
-      alert("Failed to retrieve entry - " + error.message);
+      alert("Failed to update timesheet - " + error.message);
     }
   }
 

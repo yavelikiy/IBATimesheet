@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import PropTypes from 'prop-types';
 
 import {
     StyleSheet,
@@ -8,6 +9,7 @@ import {
     Alert,
 } from "react-native";
 
+const SHOW_HOURS = true;
 
 export default class Calendar extends Component {
 
@@ -35,16 +37,27 @@ export default class Calendar extends Component {
 
     static get propTypes() {
         return {
-            date: React.PropTypes.object,
-            today: React.PropTypes.object,
-            dayNames: React.PropTypes.array,
-            monthNames: React.PropTypes.array,
-            weekFirstDay: React.PropTypes.number,
-            timesheet: React.PropTypes.object,
-            workdayDefault: React.PropTypes.string,
-            weekendDefault: React.PropTypes.string,
-            holydayDefault: React.PropTypes.string,
+            date: PropTypes.object,
+            today: PropTypes.object,
+            dayNames: PropTypes.array,
+            monthNames: PropTypes.array,
+            weekFirstDay: PropTypes.number,
+            timesheet: PropTypes.object,
+            workdayDefault: PropTypes.string,
+            weekendDefault: PropTypes.string,
+            holydayDefault: PropTypes.string,
         };
+        // return {
+        //     date: React.PropTypes.object,
+        //     today: React.PropTypes.object,
+        //     dayNames: React.PropTypes.array,
+        //     monthNames: React.PropTypes.array,
+        //     weekFirstDay: React.PropTypes.number,
+        //     timesheet: React.PropTypes.object,
+        //     workdayDefault: React.PropTypes.string,
+        //     weekendDefault: React.PropTypes.string,
+        //     holydayDefault: React.PropTypes.string,
+        // };
     }
 
     handleDayPress(dateNumber, timeType) {
@@ -66,6 +79,7 @@ export default class Calendar extends Component {
             </View>
         );
     }
+
 
     renderDayNames() {
         const elements = [];

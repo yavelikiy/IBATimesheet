@@ -54,7 +54,7 @@ RCT_EXPORT_METHOD(asyncRequestWithURL:(NSString *)urlString method:(NSString *)m
     NSString* resultText;
     if(error != nil){
       RCTLog(@"WL REQUEST: %@", [error description]);
-      resultText = @"Invocation failure.";
+      resultText = [error localizedDescription];
       reject(@"Invocation failure.", resultText, error);
     }
     else{
@@ -73,7 +73,7 @@ RCT_EXPORT_METHOD(asyncRequestWithURLBody:(NSString *)urlString params:(NSString
       NSString* resultText;
       if(error != nil){
         RCTLog(@"WL REQUEST BODY: %@", [error description]);
-        resultText = @"Invocation failure.";
+        resultText = [error localizedDescription];
         reject(@"Invocation failure.", resultText, error);
       }
       else{

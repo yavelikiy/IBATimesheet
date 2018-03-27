@@ -26,7 +26,8 @@
 	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
-		<key>NSExceptionDomains</key>
+    <key>NSAppTransportSecurity</key><true/>
+    <key>NSExceptionDomains</key>
 		<dict>
 			<key>localhost</key>
 			<dict>

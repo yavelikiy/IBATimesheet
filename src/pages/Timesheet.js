@@ -14,6 +14,7 @@ import {
   Navigator,
   Modal,
   ListView,
+  Platform,
 } from 'react-native';
 import {Icon, Button, View as BaseView, Label, Item, Input} from 'native-base';
 

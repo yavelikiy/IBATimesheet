@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   NativeModules,
   DeviceEventEmitter,
+  NativeEventEmitter,
   TouchableHighlight,
 } from 'react-native';
 import {Icon, Button, Label, Text as BaseText} from 'native-base';
@@ -368,7 +369,7 @@ export default class CreateTimesheet extends Component {
     const {SecurityCheckChallengeHandlerEventEmitter} = NativeModules;
     emitter = new NativeEventEmitter(NativeModules.SecurityCheckChallengeHandlerEventEmitter);
     this.challengeEventModuleSubscription  = emitter.addListener(
-      'LOGIN_REQURIED', function (challenge) {
+      'LOGIN_REQUIRED', function (challenge) {
       	Alert.alert(
 					'Login required',
 					'Log in, please.'

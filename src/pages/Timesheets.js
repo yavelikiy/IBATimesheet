@@ -34,7 +34,7 @@ import WLResourceRequestRN from '../wrappers/WLResourceRequestRN'
 import GlobalStyle from '../styles/GlobalStyle'
 
 const TIMESHEETS_PER_ROW = 2;
-const _DEBUG = false;
+const _DEBUG = true;
 //var TIMESHEET_LIST_REQUEST = "/adapters/timesheetAdapter/statuses";
 const TIMESHEET_LIST_REQUEST = "/adapters/timesheetAdapter/timesheets/my";
 
@@ -435,10 +435,9 @@ export default class Timesheets extends Component {
     var emitter;
     const {SecurityCheckChallengeHandlerEventEmitter} = NativeModules;
     emitter = new NativeEventEmitter(NativeModules.SecurityCheckChallengeHandlerEventEmitter);
-    // if(Platform.OS == 'iOS'){
-    // }else{
-    //   emitter = DeviceEventEmitter;
-    // }     
+    if( Platform.OS === 'android'){
+      emitter = DeviceEventEmitter;
+    }     
     this.challengeEventModuleSubscription  = emitter.addListener(
       'LOGIN_REQUIRED', function (challenge) {
         that.props.navigation.dispatch({type:'Navigation/RESET', actions:[{type:'Navigation/NAVIGATE', routeName:'Login'}], index:0});

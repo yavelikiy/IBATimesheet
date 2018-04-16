@@ -3,14 +3,14 @@
 <plist version="1.0">
     <dict>
         <key>protocol</key>
-        <!--<string>http</string>-->
-        <string>https</string>
+        <string>http</string>
+        <!--string>https</string-->
         <key>host</key>
-        <!--<string>172.28.3.79</string>-->
-        <string>gml-mfs.gomel.iba.by</string>
+        <string>172.28.3.79</string>
+        <!--string>gml-mfs.gomel.iba.by</string-->
         <key>port</key>
-        <!--<string>9080</string>-->
-        <string>9443</string>
+        <string>9080</string>
+        <!--string>9443</string-->
         <key>wlServerContext</key>
         <string>/mfp/</string>
         <key>languagePreferences</key>

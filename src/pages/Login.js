@@ -18,6 +18,7 @@ import {
 } from 'react-native';
 
 import { NavigationActions } from 'react-navigation';
+import WLClientRN from '../wrappers/WLClientRN'
 import {Icon, Button, Content, Form, Label, Input, Header, Item, Footer, Text as BaseText} from 'native-base';
 
 import Container from '../components/Container';
@@ -42,15 +43,16 @@ export default class Login extends Component {
             password: "",
             error: " ",
             isLoading: false,
-            useDebug: true,
+            useDebug: false,
+            callsLogin: 0,
         };  
           //this.registerChallengeHandler();
       }
 
     static navigationOptions= { 
       headerVisible: false,
-        headerStyle: GlobalStyle.globalBackgroundDark,
-        headerTitleStyle: GlobalStyle.actionBarHeader,
+      headerStyle: GlobalStyle.globalBackgroundDark,
+      headerTitleStyle: GlobalStyle.actionBarHeader,
     };
 
 
@@ -79,6 +81,7 @@ export default class Login extends Component {
 
   componentWillMount () {
     //add all listeners when component mount
+    WLClientRN.registerChallengeHandler();
     this.addListeners();
   }
 
@@ -119,13 +122,13 @@ export default class Login extends Component {
       this.props.navigation.dispatch(resetAction);
     }else{
       //this.refs["indicator"].start();
-      this.setState({ isLoading: true});
+      this.setState({ isLoading: true, callsLogin: this.state.callsLogin+1});
       // Try to login with specified credentials
       SecurityCheckChallengeHandlerRN.login({ 'username': this.state.username.trim(), 'password': this.state.password.trim() });
     }
 	}
 
-  render2(){
+  /*render2(){
     return (
       <Container style={{ backgroundColor: "#0066B3"}}>
         <Content style={{ padding: 20}}>
@@ -172,7 +175,7 @@ export default class Login extends Component {
         </Content>
       </Container>
     );
-  }
+  }*/
 
               // onSubmitEditing={(event) => { 
               //   this.refs.pass.focus(); 
@@ -186,11 +189,11 @@ export default class Login extends Component {
           keyboardShouldPersistTaps='always'
         >
           
-        <Modal 
+        {/*<--Modal 
           animationType={"fade"} 
           transparent={true} 
           visible={this.state.isLoading} 
-          onRequestClose={() => {}} 
+          onRequestClose={() => {}}
         >
           <TouchableOpacity 
             style={GlobalStyle.activityModalOuter} 
@@ -200,7 +203,7 @@ export default class Login extends Component {
           >
             <BlueActivityIndicator ref="indicator" animating={true}/>
           </TouchableOpacity>
-        </Modal>
+        </Modal>*/}
           <Container>
             <Item stackedLabel>
               <Label style={{ color: "#fff1d0"}}>Username</Label>
@@ -297,18 +300,20 @@ export default class Login extends Component {
           that.setState({error : 'Username and/or password are incorrect.', password:'', isLoading: false});
           Alert.alert(
             'Login required',
-            'Username and/or password are incorrect.'
+            'Username and/or password are incorrect.'+
+            JSON.stringify(e),
           );
         }
     );
     //login faild. Show message
     this.failureEventModuleSubscription  = emitter.addListener(
         'LOGIN_FAILED', function (e) {
-          that.setState({error : 'Login failed. '+e.errorMsg, password:'', isLoading: false});
+          that.setState({error : 'Login failed. '+e, password:'', isLoading: false});
           Alert.alert(
-            'Login failed',
-            e.errorMsg
+           'Login failed {'+that.state.callsLogin+'}',
+           JSON.stringify(e),
           );
+          that.setState({isLoading: false});
         }
     );
     //login faild. Show message

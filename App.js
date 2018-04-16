@@ -44,12 +44,12 @@ const styles = StyleSheet.create({
 });
 
 const IBATimesheet = StackNavigator({
+  Login: { 
+    screen: Login, 
+    
+  },
     Timesheets: { 
       screen: Timesheets,
-    },
-    Login: { 
-      screen: Login, 
-      
     },
     TimesheetTimeValuePicker: { 
       screen: TimesheetTimeValuePicker, 

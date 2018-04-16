@@ -133,7 +133,7 @@ export default class Timesheet extends Component {
         isPreRequestApproval: false,
         useGrid : true,
         alreadySent : this.props.navigation.state.params.timesheet.status !== 'draft',
-        useDebug: typeof(params) != "undefined" && typeof(params.useDebug) != "undefined" ? params.useDebug : true,
+        useDebug: typeof(params) != "undefined" && typeof(params.useDebug) != "undefined" ? params.useDebug : false,
     };   
 
     this.props.navigation.setParams(
@@ -248,7 +248,7 @@ export default class Timesheet extends Component {
     var tollbarActions = ['bold','italic','unorderedList'];
 		return(
           <Swiper 
-
+            showsButtons
             loop={false}
             activeDotColor={'#f0c808'}
             style={[styles.container, GlobalStyle.globalBackground]}>     

@@ -13,6 +13,8 @@ static NSString *const kLoginNotification = @"RCTLoginNotification";
 
 static void postNotification(NSString* name, NSString* error, id sender)
 {
+  if(error == nil)
+    error = @"";
   NSDictionary<NSString *, id> *payload = @{@"errMsg": error, @"name": name};
   [[NSNotificationCenter defaultCenter] postNotificationName:kLoginNotification
                                                       object:sender
@@ -22,6 +24,7 @@ static void postNotification(NSString* name, NSString* error, id sender)
 @implementation SecurityCheckChallengeHandlerRN{
   SecurityCheckChallengeHandlerEventEmitter* emitter;
   Boolean isChallenged;
+  NSInteger loginCounts;
 }
 static NSString* const securityCheck = @"dominoSecurityCheck";
 
@@ -29,13 +32,14 @@ static NSString* const securityCheck = @"dominoSecurityCheck";
 {
   emitter = [[SecurityCheckChallengeHandlerEventEmitter allocWithZone:nil] init];
   isChallenged = false;
+  loginCounts = 0;
   return self;
 }
 
 -(void) handleChallenge:(NSDictionary *)challenge {
   isChallenged = true;
-  //[challenge setValue:self.securityCheck forKey:@"securityCheck"];
-  postNotification(@"LOGIN_REQUIRED",nil, self);
+  [challenge setValue:self.securityCheck forKey:@"securityCheck"];
+  postNotification(@"LOGIN_REQUIRED",@"Was challenged", self);
 }
 
 -(void) handleFailure:(NSDictionary *)failure {
@@ -44,10 +48,7 @@ static NSString* const securityCheck = @"dominoSecurityCheck";
   if(failure[@"failure"] != NULL){
     error = failure[@"failure"];
   }
-  NSDictionary *p = [NSDictionary dictionaryWithObjectsAndKeys:
-                        securityCheck, @"securityCheck",
-                        error, @"errorMsg", nil];
-  postNotification(@"LOGIN_FAILED",nil, self);
+  postNotification(@"LOGIN_FAILED",[error description], self);
   
 }
 
@@ -89,13 +90,17 @@ RCT_EXPORT_METHOD(logout)
 
 RCT_EXPORT_METHOD(login:(NSDictionary *)credentials)
 {
-  RCTLogInfo(@"Pretending to login");
+  loginCounts++;
+  RCTLogInfo(@"Pretending to login %li %i", loginCounts, isChallenged);
   if(isChallenged){
     [self submitChallangeAnswer:credentials];
+    isChallenged = false;
+    RCTLogInfo(@"Submit challenge answer");
+    return;
   }
-  BaseChallengeHandler *challenge = [[WLClient sharedInstance] getChallengeHandlerBySecurityCheck:securityCheck];
+  //BaseChallengeHandler *challenge = [[WLClient sharedInstance] getChallengeHandlerBySecurityCheck:securityCheck];
   WLAuthorizationManager *manager = [WLAuthorizationManager sharedInstance];
-  if (challenge != nil) {
+  //if (challenge != nil) {
     [manager login:securityCheck withCredentials:credentials withCompletionHandler:^(NSError* error) {
         if (error) {
           RCTLogInfo(@"Login failed. Error: %@", [error description]);
@@ -106,16 +111,16 @@ RCT_EXPORT_METHOD(login:(NSDictionary *)credentials)
         }
       }
     ];
-  }
+  //}
 }
 
 
 RCT_EXPORT_METHOD(obtainAccessToken)
 {
   RCTLogInfo(@"Pretending to obtain token");
-  BaseChallengeHandler *challenge = [[WLClient sharedInstance] getChallengeHandlerBySecurityCheck:securityCheck];
+  //BaseChallengeHandler *challenge = [[WLClient sharedInstance] getChallengeHandlerBySecurityCheck:securityCheck];
   WLAuthorizationManager *manager = [WLAuthorizationManager sharedInstance];
-  if (challenge != nil) {
+  //if (challenge != nil) {
     [manager obtainAccessTokenForScope:securityCheck withCompletionHandler:^(AccessToken *token, NSError *error){
       if(error){
         RCTLogInfo(@"Auto Login failed");
@@ -123,7 +128,7 @@ RCT_EXPORT_METHOD(obtainAccessToken)
         RCTLogInfo(@"Auto Login success");
       }
     }];
-  }
+  //}
 }
 RCT_EXPORT_METHOD(submitChallangeAnswer:(NSDictionary *)answer)
 {

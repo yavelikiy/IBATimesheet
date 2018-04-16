@@ -33,7 +33,7 @@ import WLResourceRequestRN from '../wrappers/WLResourceRequestRN'
 
 import GlobalStyle from '../styles/GlobalStyle'
 
-const _DEBUG = true;
+const _DEBUG = false;
 //var TIMESHEET_LIST_REQUEST = "/adapters/timesheetAdapter/statuses";
 const TIMESHEET_LIST_REQUEST = "/adapters/timesheetAdapter/timesheets/my";
 
@@ -91,7 +91,7 @@ export default class Timesheets extends Component {
       super(props);
       const { params } = this.props.navigation.state;
       this.props.navigation.setParams({Timesheets: this});
-      var isloggedIn = typeof(params) != "undefined" && typeof(params.loggedIn) != "undefined" ? params.loggedIn : false;
+      var isloggedIn = false;
       const today = new Date();
       today.setMonth(today.getMonth() - 2);
 	    this.state = {
@@ -103,12 +103,15 @@ export default class Timesheets extends Component {
           message: '',
           refreshing: false,
           loggedIn: isloggedIn,
-          useDebug: typeof(params) != "undefined" && typeof(params.useDebug) != "undefined" ? params.useDebug : true,
+          useDebug: typeof(params) != "undefined" && typeof(params.useDebug) != "undefined" ? params.useDebug : false,
 	    }
 
       if(!isloggedIn){
-      	this.registerChallengeHandler();
-      	this.obtainAccessToken();
+        this.registerChallengeHandler();
+        if(Platform.OS == 'android')
+          this.obtainAccessToken();
+        else
+          this.navigateToLogin();
       }
     }
 
@@ -295,9 +298,9 @@ export default class Timesheets extends Component {
 	   
 
    _onRefresh(year, month) {  
-     var procLeft = this.state.processCount + 1;
-     this.setState({refreshing: true, processCount: procLeft,}); 
-   	 this.fetchData(year, month); 
+     //var procLeft = this.state.processCount + 1;
+     //this.setState({refreshing: true, processCount: procLeft,}); 
+   	 //this.fetchData(year, month); 
    }
 
   componentWillMount(){
